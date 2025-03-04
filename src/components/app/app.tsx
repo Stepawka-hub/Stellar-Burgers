@@ -12,7 +12,7 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 
-import { AppHeader } from '@components';
+import { AppHeader, Modal, OrderInfo } from '@components';
 import { Route, Routes } from 'react-router-dom';
 
 const App = () => (
@@ -31,6 +31,39 @@ const App = () => (
       </Route>
       <Route path='*' element={<NotFound404 />} />
     </Routes>
+
+    {/* <Routes>
+        <Route
+          path='/feed/:number'
+          element={
+            <Modal title='Информация о заказе' onClose={() => {}}>
+              <OrderInfo />
+            </Modal>
+          }
+        />
+      </Routes>
+
+      <Routes>
+        <Route
+          path='/ingredients/:id'
+          element={
+            <Modal title='Ингредиент' onClose={() => {}}>
+              <OrderInfo />
+            </Modal>
+          }
+        />
+      </Routes>
+
+      <Routes>
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <Modal title='Заказы' onClose={() => {}}>
+              <OrderInfo />
+            </Modal>
+          }
+        />
+      </Routes> */}
   </div>
 );
 
