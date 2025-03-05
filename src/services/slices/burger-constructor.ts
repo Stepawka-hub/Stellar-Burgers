@@ -44,6 +44,22 @@ const burgerConstructorSlice = createSlice({
     },
     setOrderRequest: (state, { payload }: PayloadAction<boolean>) => {
       state.orderRequest = payload;
+    },
+    moveIngredient: (
+      state,
+      { payload }: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) => {
+      // Достаём индексы, откуда и куда переместить ингредиент
+      const { fromIndex, toIndex } = payload;
+
+      // Убираем ингредиент с текущей позиции и возвращаем его
+      const ingredientToMove = state.constructorItems.ingredients.splice(
+        fromIndex,
+        1
+      )[0];
+
+      // Размещаем наш ингредиент на новую позицию
+      state.constructorItems.ingredients.splice(toIndex, 0, ingredientToMove);
     }
   },
   selectors: {
@@ -56,5 +72,9 @@ const burgerConstructorSlice = createSlice({
 export const reducer = burgerConstructorSlice.reducer;
 export const { getConstructorItems, getOrderRequest, getOrderModalData } =
   burgerConstructorSlice.selectors;
-export const { addIngredient, removeIngredient, setOrderRequest } =
-  burgerConstructorSlice.actions;
+export const {
+  addIngredient,
+  removeIngredient,
+  setOrderRequest,
+  moveIngredient
+} = burgerConstructorSlice.actions;
