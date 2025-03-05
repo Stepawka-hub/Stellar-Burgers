@@ -37,19 +37,9 @@ const ingredientSlice = createSlice({
       .addCase(
         getIngredients.fulfilled,
         (state, { payload }: PayloadAction<TIngredient[]>) => {
-          payload.forEach((item) => {
-            switch (item.type) {
-              case 'bun':
-                state.buns.push(item);
-                break;
-              case 'sauce':
-                state.souces.push(item);
-                break;
-              case 'main':
-                state.mains.push(item);
-                break;
-            }
-          });
+          state.buns = payload.filter((item) => item.type === 'bun');
+          state.souces = payload.filter((item) => item.type === 'sauce');
+          state.mains = payload.filter((item) => item.type === 'main');
           state.isIngredientsLoading = false;
         }
       );
