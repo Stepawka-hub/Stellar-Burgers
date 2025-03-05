@@ -8,7 +8,7 @@ import {
   getBunsSelector,
   getMainsSelector,
   getSaucesSelector
-} from '../../services/slices/ingredients';
+} from '../../services/slices/ingredients/selectors';
 
 export const BurgerIngredients: FC = () => {
   const buns = useSelector(getBunsSelector);

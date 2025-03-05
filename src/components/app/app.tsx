@@ -12,27 +12,70 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 
-import { AppHeader, Modal, OrderInfo } from '@components';
-import { Route, Routes } from 'react-router-dom';
+import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
-const App = () => (
-  <div className={styles.app}>
-    <AppHeader />
-    <Routes>
-      <Route path='/' element={<ConstructorPage />} />
-      <Route path='/feed' element={<Feed />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
-      <Route path='/forgot-password' element={<ForgotPassword />} />
-      <Route path='/reset-password' element={<ResetPassword />} />
-      <Route path='/profile'>
-        <Route index element={<Profile />} />
-        <Route path='/profile/orders' element={<ProfileOrders />} />
-      </Route>
-      <Route path='*' element={<NotFound404 />} />
-    </Routes>
+import { useDispatch } from '../../services/store';
+import { useSelector } from 'react-redux';
+import { Preloader } from '@ui';
+import { getInitialized, initializeApp } from '../../services/slices/app/app';
 
-    {/* <Routes>
+const App = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const initialized = useSelector(getInitialized);
+
+  const location = useLocation();
+  const background = location.state?.background;
+
+  /* Делаем инициализацию приложения */
+  useEffect(() => {
+    dispatch(initializeApp());
+  }, []);
+
+  const onClose = () => {
+    navigate(background);
+  };
+
+  return (
+    <div className={styles.app}>
+      <AppHeader />
+
+      {!initialized ? (
+        <Preloader />
+      ) : (
+        <Routes location={background || location}>
+          <Route path='/' element={<ConstructorPage />} />
+          <Route path='/feed' element={<Feed />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/profile'>
+            <Route index element={<Profile />} />
+            <Route path='orders' element={<ProfileOrders />} />
+          </Route>
+          <Route path='/ingredients/:id' element={<IngredientDetails />} />
+          <Route path='*' element={<NotFound404 />} />
+        </Routes>
+      )}
+
+      {background && (
+        <Routes>
+          <Route
+            path='/ingredients/:id'
+            element={
+              <Modal title='Ингредиент' onClose={onClose}>
+                <IngredientDetails />
+              </Modal>
+            }
+          />
+        </Routes>
+      )}
+
+      {/* 
+      <Routes>
         <Route
           path='/feed/:number'
           element={
@@ -41,18 +84,7 @@ const App = () => (
             </Modal>
           }
         />
-      </Routes>
-
-      <Routes>
-        <Route
-          path='/ingredients/:id'
-          element={
-            <Modal title='Ингредиент' onClose={() => {}}>
-              <OrderInfo />
-            </Modal>
-          }
-        />
-      </Routes>
+      </Routes> 
 
       <Routes>
         <Route
@@ -63,8 +95,10 @@ const App = () => (
             </Modal>
           }
         />
-      </Routes> */}
-  </div>
-);
+      </Routes> 
+      */}
+    </div>
+  );
+};
 
 export default App;

@@ -7,7 +7,7 @@ import {
   getOrderModalData,
   getOrderRequest,
   setOrderRequest
-} from '../../services/slices/burger-constructor';
+} from '../../services/slices/burget-constructor/burger-constructor';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();

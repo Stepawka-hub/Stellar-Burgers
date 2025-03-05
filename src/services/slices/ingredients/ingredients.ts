@@ -3,28 +3,32 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 
 type TInitialState = {
-  buns: TIngredient[];
-  souces: TIngredient[];
-  mains: TIngredient[];
+  ingredients: TIngredient[];
   isIngredientsLoading: boolean;
+  currentIngredient: TIngredient | null;
 };
 
 const initialState: TInitialState = {
-  buns: [],
-  souces: [],
-  mains: [],
-  isIngredientsLoading: false
+  ingredients: [],
+  isIngredientsLoading: false,
+  currentIngredient: null
 };
 
 const ingredientSlice = createSlice({
   name: 'ingredients',
   initialState,
-  reducers: {},
+  reducers: {
+    setCurrentIngredient: (state, { payload }: PayloadAction<string>) => {
+      const ingredient = state.ingredients.find((i) => i._id === payload);
+      if (ingredient) {
+        state.currentIngredient = ingredient;
+      }
+    }
+  },
   selectors: {
-    getBunsSelector: (state) => state.buns,
-    getSaucesSelector: (state) => state.souces,
-    getMainsSelector: (state) => state.mains,
-    getIsIngredientLoading: (state) => state.isIngredientsLoading
+    getIngredientsSelector: (state) => state.ingredients,
+    getIsIngredientLoading: (state) => state.isIngredientsLoading,
+    getCurrentIngredient: (state) => state.currentIngredient
   },
   extraReducers: (builder) => {
     builder
@@ -37,9 +41,7 @@ const ingredientSlice = createSlice({
       .addCase(
         getIngredients.fulfilled,
         (state, { payload }: PayloadAction<TIngredient[]>) => {
-          state.buns = payload.filter((item) => item.type === 'bun');
-          state.souces = payload.filter((item) => item.type === 'sauce');
-          state.mains = payload.filter((item) => item.type === 'main');
+          state.ingredients = payload;
           state.isIngredientsLoading = false;
         }
       );
@@ -52,9 +54,9 @@ export const getIngredients = createAsyncThunk(
 );
 
 export const reducer = ingredientSlice.reducer;
+export const { setCurrentIngredient } = ingredientSlice.actions;
 export const {
-  getBunsSelector,
-  getSaucesSelector,
-  getMainsSelector,
-  getIsIngredientLoading
+  getIngredientsSelector,
+  getIsIngredientLoading,
+  getCurrentIngredient
 } = ingredientSlice.selectors;
