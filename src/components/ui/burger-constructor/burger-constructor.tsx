@@ -47,7 +47,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
                 ingredient={item}
                 index={index}
                 totalItems={constructorItems.ingredients.length}
-                key={item.id}
+                key={index}
               />
             )
           )
