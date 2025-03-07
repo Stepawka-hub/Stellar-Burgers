@@ -19,7 +19,7 @@ import { useEffect } from 'react';
 import { useDispatch } from '../../services/store';
 import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
-import { getInitialized, initializeApp } from '../../services/slices/app/app';
+import { getInitialized, initializeApp } from '../../services/slices/appSlice';
 
 const App = () => {
   const dispatch = useDispatch();

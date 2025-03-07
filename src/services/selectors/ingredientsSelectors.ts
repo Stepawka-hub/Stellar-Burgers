@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { getIngredientsSelector } from './ingredients';
+import { getIngredientsSelector } from '../slices/ingredientsSlice';
 
 export const getBunsSelector = createSelector(
   getIngredientsSelector,

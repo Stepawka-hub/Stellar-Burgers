@@ -35,16 +35,16 @@ const ingredientSlice = createSlice({
       .addCase(getIngredients.pending, (state) => {
         state.isIngredientsLoading = true;
       })
-      .addCase(getIngredients.rejected, (state) => {
-        state.isIngredientsLoading = false;
-      })
       .addCase(
         getIngredients.fulfilled,
         (state, { payload }: PayloadAction<TIngredient[]>) => {
           state.ingredients = payload;
           state.isIngredientsLoading = false;
         }
-      );
+      )
+      .addCase(getIngredients.rejected, (state) => {
+        state.isIngredientsLoading = false;
+      });
   }
 });
 

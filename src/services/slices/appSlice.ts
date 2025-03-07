@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getIngredients } from '../ingredients/ingredients';
+import { getIngredients } from './ingredientsSlice';
 
 type TInitialState = {
   initialized: boolean;

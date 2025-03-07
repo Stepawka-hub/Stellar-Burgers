@@ -6,7 +6,7 @@ import {
   getCurrentIngredient,
   getIsIngredientLoading,
   setCurrentIngredient
-} from '../../services/slices/ingredients/ingredients';
+} from '../../services/slices/ingredientsSlice';
 import { useParams } from 'react-router-dom';
 
 export const IngredientDetails: FC = () => {
@@ -19,6 +19,10 @@ export const IngredientDetails: FC = () => {
     if (id) {
       dispatch(setCurrentIngredient(id));
     }
+
+    return () => {
+      dispatch(setCurrentIngredient(''));
+    };
   }, [id, isIngredientsLoading]);
 
   if (!ingredientData) {
