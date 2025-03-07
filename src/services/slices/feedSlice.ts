@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getFeedsApi } from '@api';
-import { TOrder, TOrdersData } from '@utils-types';
+import { TOrdersData } from '@utils-types';
 
 type TInitialState = {
   feed: TOrdersData;
+  previewOrderNumber: number | null;
   isFetchingFeeds: boolean;
 };
 
@@ -13,16 +14,25 @@ const initialState: TInitialState = {
     total: 0,
     totalToday: 0
   },
+  previewOrderNumber: null,
   isFetchingFeeds: true
 };
 
 const feedSlice = createSlice({
   name: 'feed',
   initialState,
-  reducers: {},
+  reducers: {
+    setPreviewOrderNumber: (
+      state,
+      { payload }: PayloadAction<number | null>
+    ) => {
+      state.previewOrderNumber = payload;
+    }
+  },
   selectors: {
     getFeedSelector: (state) => state.feed,
     getOrdersSelector: (state) => state.feed.orders,
+    getPreviewOrderNumber: (state) => state.previewOrderNumber,
     getIsFetchingFeedsSelector: (state) => state.isFetchingFeeds
   },
   extraReducers: (builder) => {
@@ -48,8 +58,10 @@ export const getFeeds = createAsyncThunk('feed/getAll', async () =>
 );
 
 export const reducer = feedSlice.reducer;
+export const { setPreviewOrderNumber } = feedSlice.actions;
 export const {
   getFeedSelector,
   getOrdersSelector,
+  getPreviewOrderNumber,
   getIsFetchingFeedsSelector
 } = feedSlice.selectors;

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getIngredients } from './ingredientsSlice';
+import { getFeeds } from './feedSlice';
 
 type TInitialState = {
   initialized: boolean;
@@ -33,8 +34,9 @@ const appSlice = createSlice({
 export const initializeApp = createAsyncThunk(
   'app/initialize',
   async (_, { dispatch }) => {
-    const promise = dispatch(getIngredients());
-    return await Promise.all([promise]);
+    const getIngredientsPromise = dispatch(getIngredients());
+    const getFeedsPromise = dispatch(getFeeds());
+    return await Promise.all([getIngredientsPromise, getFeedsPromise]);
   }
 );
 
