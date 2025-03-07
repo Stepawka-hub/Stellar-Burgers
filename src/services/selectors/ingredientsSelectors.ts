@@ -1,5 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { getIngredientsSelector } from '../slices/ingredientsSlice';
+import {
+  getIngredientsSelector,
+  getPreviewIngredientId
+} from '../slices/ingredientsSlice';
 
 export const getBunsSelector = createSelector(
   getIngredientsSelector,
@@ -14,4 +17,11 @@ export const getSaucesSelector = createSelector(
 export const getMainsSelector = createSelector(
   getIngredientsSelector,
   (ingredients) => ingredients.filter((i) => i.type === 'main')
+);
+
+export const getPreviewIngredient = createSelector(
+  getIngredientsSelector,
+  getPreviewIngredientId,
+  (ingredients, previewIngredientId) =>
+    ingredients.find((i) => i._id === previewIngredientId)
 );

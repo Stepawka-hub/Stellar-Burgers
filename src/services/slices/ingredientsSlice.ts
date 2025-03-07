@@ -5,30 +5,30 @@ import { TIngredient } from '@utils-types';
 type TInitialState = {
   ingredients: TIngredient[];
   isIngredientsLoading: boolean;
-  currentIngredient: TIngredient | null;
+  previewIngredientId: string | null;
 };
 
 const initialState: TInitialState = {
   ingredients: [],
   isIngredientsLoading: false,
-  currentIngredient: null
+  previewIngredientId: null
 };
 
 const ingredientSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
-    setCurrentIngredient: (state, { payload }: PayloadAction<string>) => {
-      const ingredient = state.ingredients.find((i) => i._id === payload);
-      if (ingredient) {
-        state.currentIngredient = ingredient;
-      }
+    setPreviewIngredientId: (
+      state,
+      { payload }: PayloadAction<string | null>
+    ) => {
+      state.previewIngredientId = payload;
     }
   },
   selectors: {
     getIngredientsSelector: (state) => state.ingredients,
     getIsIngredientLoading: (state) => state.isIngredientsLoading,
-    getCurrentIngredient: (state) => state.currentIngredient
+    getPreviewIngredientId: (state) => state.previewIngredientId
   },
   extraReducers: (builder) => {
     builder
@@ -54,9 +54,9 @@ export const getIngredients = createAsyncThunk(
 );
 
 export const reducer = ingredientSlice.reducer;
-export const { setCurrentIngredient } = ingredientSlice.actions;
+export const { setPreviewIngredientId } = ingredientSlice.actions;
 export const {
   getIngredientsSelector,
   getIsIngredientLoading,
-  getCurrentIngredient
+  getPreviewIngredientId
 } = ingredientSlice.selectors;

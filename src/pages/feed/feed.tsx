@@ -4,7 +4,7 @@ import { TOrder } from '@utils-types';
 import { FC, useEffect } from 'react';
 import {
   getFeeds,
-  getIsFetchingFeedsSelector,
+  getIsFetchingFeeds,
   getOrdersSelector
 } from '../../services/slices/feedSlice';
 import { useDispatch, useSelector } from '../../services/store';
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from '../../services/store';
 export const Feed: FC = () => {
   /** TODO: взять переменную из стора */
   const dispatch = useDispatch();
-  const isFetchingFeeds = useSelector(getIsFetchingFeedsSelector);
+  const isFetchingFeeds = useSelector(getIsFetchingFeeds);
   const orders: TOrder[] = useSelector(getOrdersSelector);
 
   useEffect(() => {

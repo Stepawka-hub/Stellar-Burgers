@@ -2,28 +2,24 @@ import { FC, useEffect } from 'react';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
 import { useDispatch, useSelector } from '../../services/store';
-import {
-  getCurrentIngredient,
-  getIsIngredientLoading,
-  setCurrentIngredient
-} from '../../services/slices/ingredientsSlice';
+import { setPreviewIngredientId } from '../../services/slices/ingredientsSlice';
 import { useParams } from 'react-router-dom';
+import { getPreviewIngredient } from '../../services/selectors/ingredientsSelectors';
 
 export const IngredientDetails: FC = () => {
   const dispatch = useDispatch();
-  const isIngredientsLoading = useSelector(getIsIngredientLoading);
-  const ingredientData = useSelector(getCurrentIngredient);
+  const ingredientData = useSelector(getPreviewIngredient);
   const { id } = useParams<'id'>();
 
   useEffect(() => {
     if (id) {
-      dispatch(setCurrentIngredient(id));
+      dispatch(setPreviewIngredientId(id));
     }
 
     return () => {
-      dispatch(setCurrentIngredient(''));
+      dispatch(setPreviewIngredientId(null));
     };
-  }, [id, isIngredientsLoading]);
+  }, [id]);
 
   if (!ingredientData) {
     return <Preloader />;

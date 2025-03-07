@@ -33,7 +33,7 @@ const feedSlice = createSlice({
     getFeedSelector: (state) => state.feed,
     getOrdersSelector: (state) => state.feed.orders,
     getPreviewOrderNumber: (state) => state.previewOrderNumber,
-    getIsFetchingFeedsSelector: (state) => state.isFetchingFeeds
+    getIsFetchingFeeds: (state) => state.isFetchingFeeds
   },
   extraReducers: (builder) => {
     builder
@@ -63,5 +63,5 @@ export const {
   getFeedSelector,
   getOrdersSelector,
   getPreviewOrderNumber,
-  getIsFetchingFeedsSelector
+  getIsFetchingFeeds
 } = feedSlice.selectors;

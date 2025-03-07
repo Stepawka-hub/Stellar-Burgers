@@ -6,15 +6,11 @@ import { useParams } from 'react-router-dom';
 import { getPreviewOrderSelector } from '../../services/selectors/feedSelectors';
 import { useDispatch, useSelector } from '../../services/store';
 import { getIngredientsSelector } from '../../services/slices/ingredientsSlice';
-import {
-  getIsFetchingFeedsSelector,
-  setPreviewOrderNumber
-} from '../../services/slices/feedSlice';
+import { setPreviewOrderNumber } from '../../services/slices/feedSlice';
 
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
   const { number } = useParams<'number'>();
-  const isFetchingFeeds = useSelector(getIsFetchingFeedsSelector);
   const orderData = useSelector(getPreviewOrderSelector);
   const ingredients: TIngredient[] = useSelector(getIngredientsSelector);
 
@@ -26,7 +22,7 @@ export const OrderInfo: FC = () => {
     return () => {
       dispatch(setPreviewOrderNumber(null));
     };
-  }, [number, isFetchingFeeds]);
+  }, [number]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
