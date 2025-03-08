@@ -15,7 +15,7 @@ export const handlePending = (state: TInitialState, actionType: UserAction) => {
 export const handleRejected = (
   state: TInitialState,
   actionType: UserAction,
-  errorMessage: string
+  errorMessage: string = ''
 ) => {
   state[`${actionType}Request`] = false;
   state.isAuthChecked = true;

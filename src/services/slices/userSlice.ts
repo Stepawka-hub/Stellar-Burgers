@@ -22,8 +22,9 @@ export type TInitialState = {
   isAuthenticated: boolean;
   user: TUser | null;
   loginUserRequest: boolean;
-  loginUserError: string;
   registerUserRequest: boolean;
+  logoutUserRequest: boolean;
+  loginUserError: string;
   registerUserError: string;
 };
 
@@ -32,8 +33,9 @@ const initialState: TInitialState = {
   isAuthenticated: false,
   user: null,
   loginUserRequest: false,
-  loginUserError: '',
   registerUserRequest: false,
+  logoutUserRequest: false,
+  loginUserError: '',
   registerUserError: ''
 };
 
@@ -61,7 +63,8 @@ const userSlice = createSlice({
     getLoginUserRequest: (state) => state.loginUserRequest,
     getLoginUserError: (state) => state.loginUserError,
     getRegisterUserRequest: (state) => state.registerUserRequest,
-    getRegisterUserError: (state) => state.registerUserError
+    getRegisterUserError: (state) => state.registerUserError,
+    getLogoutUserRequest: (state) => state.logoutUserRequest
   },
   extraReducers: (builder) => {
     builder
@@ -80,8 +83,8 @@ const userSlice = createSlice({
       .addCase(loginUser.pending, (state) =>
         handlePending(state, UserAction.login)
       )
-      .addCase(loginUser.rejected, (state) =>
-        handleRejected(state, UserAction.login, 'Неверная почта или пароль!')
+      .addCase(loginUser.rejected, (state, { error }) =>
+        handleRejected(state, UserAction.login, error.message)
       )
       .addCase(
         loginUser.fulfilled,
@@ -92,19 +95,26 @@ const userSlice = createSlice({
       .addCase(registerUser.pending, (state) =>
         handlePending(state, UserAction.register)
       )
-      .addCase(registerUser.rejected, (state) => {
-        handleRejected(
-          state,
-          UserAction.register,
-          'Неверная почта или пароль!'
-        );
+      .addCase(registerUser.rejected, (state, { error }) => {
+        handleRejected(state, UserAction.register, error.message);
       })
       .addCase(
         registerUser.fulfilled,
         (state, { payload }: PayloadAction<TAuthResponse>) => {
           handleFulfilled(state, UserAction.register, payload);
         }
-      );
+      )
+
+      .addCase(logoutUser.pending, (state) => {
+        state.logoutUserRequest = true;
+      })
+      .addCase(logoutUser.rejected, (state, { error }) => {
+        state.logoutUserRequest = false;
+        console.error(error);
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.logoutUserRequest = false;
+      });
   }
 });
 
@@ -136,17 +146,15 @@ export const loginUser = createAsyncThunk(
   async (data: TLoginData) => await loginUserApi(data)
 );
 
-export const logoutUser = createAsyncThunk('user/logout', (_, { dispatch }) => {
-  logoutApi()
-    .then(() => {
-      localStorage.clear();
+export const logoutUser = createAsyncThunk(
+  'user/logout',
+  async (_, { dispatch }) =>
+    logoutApi().then(() => {
+      localStorage.removeItem('refreshToken');
       deleteCookie('accessToken');
       dispatch(userLogout());
     })
-    .catch(() => {
-      console.log('Ошибка выполнения выхода');
-    });
-});
+);
 
 export const reducer = userSlice.reducer;
 export const {
@@ -161,5 +169,6 @@ export const {
   getLoginUserError,
   getLoginUserRequest,
   getRegisterUserError,
-  getRegisterUserRequest
+  getRegisterUserRequest,
+  getLogoutUserRequest
 } = userSlice.selectors;

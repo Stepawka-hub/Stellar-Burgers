@@ -10,14 +10,18 @@ import {
 
 export const Login: FC = () => {
   const dispatch = useDispatch();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('login-email') || '');
   const [password, setPassword] = useState('');
   const error = useSelector(getLoginUserError);
   const loginRequest = useSelector(getLoginUserRequest);
 
   const handleSubmit = (e: SyntheticEvent) => {
-    dispatch(loginUser({ email, password }));
     e.preventDefault();
+    if (!email || !password) {
+      return dispatch(setLoginUserError('Заполнены не все поля!'));
+    }
+    localStorage.setItem('login-email', email);
+    dispatch(loginUser({ email, password }));
   };
 
   useEffect(

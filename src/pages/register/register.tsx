@@ -17,8 +17,11 @@ export const Register: FC = () => {
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: SyntheticEvent) => {
-    dispatch(registerUser({ email, name: userName, password }));
     e.preventDefault();
+    if (!userName || !email || !password) {
+      return dispatch(setRegisterUserError('Заполнены не все поля!'));
+    }
+    dispatch(registerUser({ email, name: userName, password }));
   };
 
   useEffect(

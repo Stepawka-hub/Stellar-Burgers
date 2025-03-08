@@ -174,7 +174,7 @@ export const loginUserApi = (data: TLoginData) =>
     .then((res) => checkResponse<TAuthResponse>(res))
     .then((data) => {
       if (data?.success) return data;
-      return Promise.reject(data.message);
+      return Promise.reject(data);
     });
 
 export const forgotPasswordApi = (data: { email: string }) =>
