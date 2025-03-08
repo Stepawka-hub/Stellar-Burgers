@@ -1,6 +1,7 @@
 import {
   getUserApi,
   loginUserApi,
+  logoutApi,
   registerUserApi,
   TAuthResponse,
   TLoginData,
@@ -8,7 +9,7 @@ import {
 } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
-import { getCookie } from '../../utils/cookie';
+import { deleteCookie, getCookie } from '../../utils/cookie';
 import {
   handleFulfilled,
   handlePending,
@@ -48,6 +49,10 @@ const userSlice = createSlice({
     },
     setRegisterUserError: (state, { payload }: PayloadAction<string>) => {
       state.registerUserError = payload;
+    },
+    userLogout: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
     }
   },
   selectors: {
@@ -131,9 +136,25 @@ export const loginUser = createAsyncThunk(
   async (data: TLoginData) => await loginUserApi(data)
 );
 
+export const logoutUser = createAsyncThunk('user/logout', (_, { dispatch }) => {
+  logoutApi()
+    .then(() => {
+      localStorage.clear();
+      deleteCookie('accessToken');
+      dispatch(userLogout());
+    })
+    .catch(() => {
+      console.log('Ошибка выполнения выхода');
+    });
+});
+
 export const reducer = userSlice.reducer;
-export const { setAuthChecked, setLoginUserError, setRegisterUserError } =
-  userSlice.actions;
+export const {
+  setAuthChecked,
+  setLoginUserError,
+  setRegisterUserError,
+  userLogout
+} = userSlice.actions;
 export const {
   getAuthChecked,
   getUserSelector,
