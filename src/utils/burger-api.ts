@@ -8,6 +8,7 @@ const checkResponse = <T>(res: Response): Promise<T> =>
 
 type TServerResponse<T> = {
   success: boolean;
+  message?: string;
 } & T;
 
 type TRefreshResponse = TServerResponse<{
@@ -137,7 +138,7 @@ export type TRegisterData = {
   password: string;
 };
 
-type TAuthResponse = TServerResponse<{
+export type TAuthResponse = TServerResponse<{
   refreshToken: string;
   accessToken: string;
   user: TUser;
@@ -173,7 +174,7 @@ export const loginUserApi = (data: TLoginData) =>
     .then((res) => checkResponse<TAuthResponse>(res))
     .then((data) => {
       if (data?.success) return data;
-      return Promise.reject(data);
+      return Promise.reject(data.message);
     });
 
 export const forgotPasswordApi = (data: { email: string }) =>

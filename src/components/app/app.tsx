@@ -20,6 +20,7 @@ import { useDispatch } from '../../services/store';
 import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
 import { getInitialized, initializeApp } from '../../services/slices/appSlice';
+import { ProtectedRoute } from '../protected-route';
 
 /* 
   Через useEffect инициализируем приложение (получаем начальные ингредиенты, заказы).
@@ -57,13 +58,63 @@ const App = () => {
         <Routes location={background || location}>
           <Route path='/' element={<ConstructorPage />} />
           <Route path='/feed' element={<Feed />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-          <Route path='/reset-password' element={<ResetPassword />} />
+          <Route
+            path='/login'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <Login />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/register'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <Register />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/forgot-password'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <ForgotPassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/reset-password'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <ResetPassword />
+              </ProtectedRoute>
+            }
+          />
           <Route path='/profile'>
-            <Route index element={<Profile />} />
-            <Route path='orders' element={<ProfileOrders />} />
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='orders'
+              element={
+                <ProtectedRoute>
+                  <ProfileOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='orders/:number'
+              element={
+                <ProtectedRoute>
+                  <OrderInfo />
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path='/ingredients/:id' element={<IngredientDetails />} />
           <Route path='/feed/:number' element={<OrderInfo />} />
@@ -101,7 +152,7 @@ const App = () => {
           path='/profile/orders/:number'
           element={
             <Modal title='Заказы' onClose={() => {}}>
-              <OrderInfo />
+              <ProfileOrders />
             </Modal>
           }
         />
