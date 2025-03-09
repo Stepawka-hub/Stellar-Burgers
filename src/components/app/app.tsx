@@ -12,7 +12,13 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 
-import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
+import {
+  AppHeader,
+  IngredientDetails,
+  Modal,
+  OrderInfo,
+  PreviewLayout
+} from '@components';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -116,8 +122,22 @@ const App = () => {
               }
             />
           </Route>
-          <Route path='/ingredients/:id' element={<IngredientDetails />} />
-          <Route path='/feed/:number' element={<OrderInfo />} />
+          <Route
+            path='/ingredients/:id'
+            element={
+              <PreviewLayout title='Детали ингредиента'>
+                <IngredientDetails />
+              </PreviewLayout>
+            }
+          />
+          <Route
+            path='/feed/:number'
+            element={
+              <PreviewLayout title='Детали заказа'>
+                <OrderInfo />
+              </PreviewLayout>
+            }
+          />
           <Route path='*' element={<NotFound404 />} />
         </Routes>
       )}
