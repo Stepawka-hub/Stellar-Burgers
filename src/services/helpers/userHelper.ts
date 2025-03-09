@@ -4,7 +4,9 @@ import { setCookie } from '../../utils/cookie';
 
 export enum UserAction {
   login = 'loginUser',
-  register = 'registerUser'
+  register = 'registerUser',
+  logout = 'logoutUser',
+  update = 'updateUser'
 }
 
 export const handlePending = (state: TInitialState, actionType: UserAction) => {
@@ -18,17 +20,14 @@ export const handleRejected = (
   errorMessage: string = ''
 ) => {
   state[`${actionType}Request`] = false;
-  state.isAuthChecked = true;
   state[`${actionType}Error`] = errorMessage;
 };
 
 export const handleFulfilled = (
   state: TInitialState,
-  actionType: UserAction,
-  payload: TAuthResponse
+  actionType: UserAction
 ) => {
   state[`${actionType}Request`] = false;
-  handleSuccessLogin(state, payload);
 };
 
 export const handleSuccessLogin = (

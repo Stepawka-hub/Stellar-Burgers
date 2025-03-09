@@ -1,10 +1,19 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-import { useSelector } from '../../services/store';
-import { getUserSelector } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  getUpdateUserError,
+  getUpdateUserRequest,
+  getUserSelector,
+  setUpdateUserError,
+  updateUser
+} from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
+  const dispatch = useDispatch();
   const user = useSelector(getUserSelector);
+  const updateUserError = useSelector(getUpdateUserError);
+  const updateUserRequest = useSelector(getUpdateUserRequest);
 
   const [formValue, setFormValue] = useState({
     name: user?.name || '',
@@ -27,6 +36,12 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (!formValue.name || !formValue.email || !formValue.password) {
+      dispatch(setUpdateUserError('Не все поля заполнены!'));
+      return;
+    }
+
+    dispatch(updateUser({ ...formValue }));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
@@ -36,6 +51,7 @@ export const Profile: FC = () => {
       email: user?.email || '',
       password: ''
     });
+    dispatch(setUpdateUserError(''));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +65,8 @@ export const Profile: FC = () => {
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
+      updateUserError={updateUserError}
+      updateUserRequest={updateUserRequest}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}

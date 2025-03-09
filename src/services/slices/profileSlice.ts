@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getOrdersApi } from '@api';
-import { TOrder } from '@utils-types';
+import { getOrdersApi, TRegisterData, updateUserApi } from '@api';
+import { TOrder, TUser } from '@utils-types';
 
 type TInitialState = {
   orders: TOrder[];

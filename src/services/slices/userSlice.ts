@@ -5,7 +5,8 @@ import {
   registerUserApi,
   TAuthResponse,
   TLoginData,
-  TRegisterData
+  TRegisterData,
+  updateUserApi
 } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
@@ -14,6 +15,7 @@ import {
   handleFulfilled,
   handlePending,
   handleRejected,
+  handleSuccessLogin,
   UserAction
 } from '../helpers/userHelper';
 
@@ -21,22 +23,32 @@ export type TInitialState = {
   isAuthChecked: boolean;
   isAuthenticated: boolean;
   user: TUser | null;
+
   loginUserRequest: boolean;
   registerUserRequest: boolean;
   logoutUserRequest: boolean;
+  updateUserRequest: boolean;
+
   loginUserError: string;
   registerUserError: string;
+  logoutUserError: string;
+  updateUserError: string;
 };
 
 const initialState: TInitialState = {
   isAuthChecked: false,
   isAuthenticated: false,
   user: null,
+
   loginUserRequest: false,
   registerUserRequest: false,
   logoutUserRequest: false,
+  updateUserRequest: false,
+
   loginUserError: '',
-  registerUserError: ''
+  registerUserError: '',
+  logoutUserError: '',
+  updateUserError: ''
 };
 
 const userSlice = createSlice({
@@ -55,22 +67,31 @@ const userSlice = createSlice({
     userLogout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+    },
+    setUpdateUserError: (state, { payload }: PayloadAction<string>) => {
+      state.updateUserError = payload;
     }
   },
   selectors: {
     getAuthChecked: (state) => state.isAuthChecked,
     getIsAuthenticated: (state) => state.isAuthenticated,
     getUserSelector: (state) => state.user,
+
     getLoginUserRequest: (state) => state.loginUserRequest,
-    getLoginUserError: (state) => state.loginUserError,
     getRegisterUserRequest: (state) => state.registerUserRequest,
+    getLogoutUserRequest: (state) => state.logoutUserRequest,
+    getUpdateUserRequest: (state) => state.updateUserRequest,
+
+    getLoginUserError: (state) => state.loginUserError,
     getRegisterUserError: (state) => state.registerUserError,
-    getLogoutUserRequest: (state) => state.logoutUserRequest
+    getLogoutUserError: (state) => state.logoutUserError,
+    getUpdateUserError: (state) => state.updateUserError
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getUser.rejected, (state) => {
+      .addCase(getUser.rejected, (state, { error }) => {
         state.isAuthChecked = true;
+        console.error(error);
       })
       .addCase(
         getUser.fulfilled,
@@ -84,37 +105,52 @@ const userSlice = createSlice({
       .addCase(loginUser.pending, (state) =>
         handlePending(state, UserAction.login)
       )
-      .addCase(loginUser.rejected, (state, { error }) =>
-        handleRejected(state, UserAction.login, error.message)
-      )
       .addCase(
         loginUser.fulfilled,
-        (state, { payload }: PayloadAction<TAuthResponse>) =>
-          handleFulfilled(state, UserAction.login, payload)
+        (state, { payload }: PayloadAction<TAuthResponse>) => {
+          handleFulfilled(state, UserAction.login);
+          handleSuccessLogin(state, payload);
+        }
       )
+      .addCase(loginUser.rejected, (state, { error }) => {
+        handleRejected(state, UserAction.login, error.message);
+        state.isAuthChecked = true;
+      })
 
       .addCase(registerUser.pending, (state) =>
         handlePending(state, UserAction.register)
       )
-      .addCase(registerUser.rejected, (state, { error }) => {
-        handleRejected(state, UserAction.register, error.message);
-      })
       .addCase(
         registerUser.fulfilled,
         (state, { payload }: PayloadAction<TAuthResponse>) => {
-          handleFulfilled(state, UserAction.register, payload);
+          handleFulfilled(state, UserAction.register);
+          handleSuccessLogin(state, payload);
         }
       )
+      .addCase(registerUser.rejected, (state, { error }) => {
+        handleRejected(state, UserAction.register, error.message);
+        state.isAuthChecked = true;
+      })
 
       .addCase(logoutUser.pending, (state) => {
-        state.logoutUserRequest = true;
+        handlePending(state, UserAction.logout);
       })
       .addCase(logoutUser.rejected, (state, { error }) => {
-        state.logoutUserRequest = false;
-        console.error(error);
+        handleRejected(state, UserAction.logout, error.message);
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.logoutUserRequest = false;
+        handleFulfilled(state, UserAction.logout);
+      })
+
+      .addCase(updateUser.pending, (state) => {
+        handlePending(state, UserAction.update);
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        handleFulfilled(state, UserAction.update);
+        state.user = payload.user;
+      })
+      .addCase(updateUser.rejected, (state, { error }) => {
+        handleRejected(state, UserAction.update, error.message);
       });
   }
 });
@@ -147,6 +183,11 @@ export const loginUser = createAsyncThunk(
   async (data: TLoginData) => await loginUserApi(data)
 );
 
+export const updateUser = createAsyncThunk(
+  'profile/updateUser',
+  async (user: Partial<TRegisterData>) => await updateUserApi(user)
+);
+
 export const logoutUser = createAsyncThunk(
   'user/logout',
   async (_, { dispatch }) =>
@@ -162,15 +203,18 @@ export const {
   setAuthChecked,
   setLoginUserError,
   setRegisterUserError,
-  userLogout
+  userLogout,
+  setUpdateUserError
 } = userSlice.actions;
 export const {
-  getAuthChecked,
   getUserSelector,
-  getLoginUserError,
+  getAuthChecked,
+  getIsAuthenticated,
   getLoginUserRequest,
-  getRegisterUserError,
   getRegisterUserRequest,
   getLogoutUserRequest,
-  getIsAuthenticated
+  getUpdateUserRequest,
+  getLoginUserError,
+  getUpdateUserError,
+  getRegisterUserError
 } = userSlice.selectors;
