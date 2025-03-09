@@ -8,6 +8,7 @@ import { PageUIProps } from '../common-type';
 export const ForgotPasswordUI: FC<PageUIProps> = ({
   errorText,
   email,
+  isFetching,
   setEmail,
   handleSubmit
 }) => (
@@ -27,13 +28,18 @@ export const ForgotPasswordUI: FC<PageUIProps> = ({
             value={email}
             name='email'
             error={false}
-            errorText=''
+            errorText={''}
             size='default'
           />
         </div>
         <div className={`pb-6 ${styles.button}`}>
-          <Button type='primary' size='medium' htmlType='submit'>
-            Восстановить
+          <Button
+            type='primary'
+            size='medium'
+            htmlType='submit'
+            disabled={isFetching}
+          >
+            {isFetching ? 'Ожидайте...' : 'Восстановить'}
           </Button>
         </div>
         {errorText && (

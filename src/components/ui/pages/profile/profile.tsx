@@ -1,6 +1,10 @@
 import { FC } from 'react';
 
-import { Button, Input } from '@zlden/react-developer-burger-ui-components';
+import {
+  Button,
+  Input,
+  PasswordInput
+} from '@zlden/react-developer-burger-ui-components';
 import styles from './profile.module.css';
 import commonStyles from '../common.module.css';
 
@@ -11,6 +15,7 @@ export const ProfileUI: FC<ProfileUIProps> = ({
   formValue,
   isFormChanged,
   updateUserError,
+  updateUserRequest,
   handleSubmit,
   handleCancel,
   handleInputChange
@@ -35,12 +40,13 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             errorText={''}
             size={'default'}
             icon={'EditIcon'}
+            disabled={updateUserRequest}
           />
         </div>
         <div className='pb-6'>
           <Input
-            type={'email'}
-            placeholder={'E-mail'}
+            type='email'
+            placeholder='E-mail'
             onChange={handleInputChange}
             value={formValue.email}
             name={'email'}
@@ -48,6 +54,7 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             errorText={''}
             size={'default'}
             icon={'EditIcon'}
+            disabled={updateUserRequest}
           />
         </div>
         <div className='pb-6'>
@@ -61,6 +68,8 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             errorText={''}
             size={'default'}
             icon={'EditIcon'}
+            minLength={6}
+            disabled={updateUserRequest}
           />
         </div>
         {isFormChanged && (
@@ -69,12 +78,18 @@ export const ProfileUI: FC<ProfileUIProps> = ({
               type='secondary'
               htmlType='button'
               size='medium'
+              disabled={updateUserRequest}
               onClick={handleCancel}
             >
               Отменить
             </Button>
-            <Button type='primary' size='medium' htmlType='submit'>
-              Сохранить
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+              disabled={updateUserRequest}
+            >
+              {updateUserRequest ? 'Обновление...' : 'Сохранить'}
             </Button>
           </div>
         )}

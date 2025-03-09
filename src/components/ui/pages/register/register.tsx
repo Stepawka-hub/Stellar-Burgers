@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import {
   Input,
   Button,
@@ -16,7 +16,8 @@ export const RegisterUI: FC<RegisterUIProps> = ({
   password,
   setPassword,
   userName,
-  setUserName
+  setUserName,
+  registerRequest
 }) => (
   <main className={styles.container}>
     <div className={`pt-6 ${styles.wrapCenter}`}>
@@ -47,7 +48,7 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               value={email}
               name={'email'}
               error={false}
-              errorText=''
+              errorText={''}
               size={'default'}
             />
           </div>
@@ -56,11 +57,17 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               name='password'
+              minLength={6}
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
-            <Button type='primary' size='medium' htmlType='submit'>
-              Зарегистрироваться
+            <Button
+              type='primary'
+              size='medium'
+              htmlType='submit'
+              disabled={registerRequest}
+            >
+              {registerRequest ? 'Проверка данных...' : 'Зарегистрироваться'}
             </Button>
           </div>
           {errorText && (

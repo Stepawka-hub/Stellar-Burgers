@@ -9,16 +9,22 @@ export const ResetPassword: FC = () => {
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
   const [error, setError] = useState<Error | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    if (!password || !token) return setError(new Error('Заполните все поля!'));
+
     setError(null);
+    setIsFetching(true);
     resetPasswordApi({ password, token })
       .then(() => {
         localStorage.removeItem('resetPassword');
         navigate('/login');
       })
-      .catch((err) => setError(err));
+      .catch((err) => setError(err))
+      .finally(() => setIsFetching(false));
   };
 
   useEffect(() => {
@@ -32,6 +38,7 @@ export const ResetPassword: FC = () => {
       errorText={error?.message}
       password={password}
       token={token}
+      isFetching={isFetching}
       setPassword={setPassword}
       setToken={setToken}
       handleSubmit={handleSubmit}
