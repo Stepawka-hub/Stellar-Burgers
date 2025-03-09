@@ -4,12 +4,12 @@ import { TOrder } from '@utils-types';
 
 type TInitialState = {
   orders: TOrder[];
-  isOrdersFetching: boolean;
+  isFetchingOrders: boolean;
 };
 
 const initialState: TInitialState = {
   orders: [],
-  isOrdersFetching: false
+  isFetchingOrders: false
 };
 
 const profileSlice = createSlice({
@@ -18,22 +18,22 @@ const profileSlice = createSlice({
   reducers: {},
   selectors: {
     getUserOrdersSelector: (state) => state.orders,
-    getIsOrdersFetching: (state) => state.isOrdersFetching
+    getIsFetchingOrders: (state) => state.isFetchingOrders
   },
   extraReducers: (builder) => {
     builder
       .addCase(getUserOrders.pending, (state) => {
-        state.isOrdersFetching = true;
+        state.isFetchingOrders = true;
       })
       .addCase(
         getUserOrders.fulfilled,
         (state, { payload }: PayloadAction<TOrder[]>) => {
-          state.isOrdersFetching = false;
+          state.isFetchingOrders = false;
           state.orders = payload;
         }
       )
       .addCase(getUserOrders.rejected, (state) => {
-        state.isOrdersFetching = false;
+        state.isFetchingOrders = false;
       });
   }
 });
@@ -44,5 +44,5 @@ export const getUserOrders = createAsyncThunk(
 );
 
 export const reducer = profileSlice.reducer;
-export const { getUserOrdersSelector, getIsOrdersFetching } =
+export const { getUserOrdersSelector, getIsFetchingOrders } =
   profileSlice.selectors;

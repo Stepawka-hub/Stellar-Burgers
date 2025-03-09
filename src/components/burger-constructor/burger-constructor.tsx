@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from 'react';
-import { TConstructorIngredient } from '@utils-types';
+import { TConstructorIngredient, TOrder } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
 import {
@@ -19,10 +19,10 @@ export const BurgerConstructor: FC = () => {
 
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
   const constructorItems = useSelector(getConstructorItems);
-  const orderRequest = useSelector(getOrderRequest);
-  const orderModalData = useSelector(getOrderModalData);
-  const isAuthenticated = useSelector(getIsAuthenticated);
-  const isBurgerReady =
+  const orderRequest: boolean = useSelector(getOrderRequest);
+  const orderModalData: TOrder | null = useSelector(getOrderModalData);
+  const isAuthenticated: boolean = useSelector(getIsAuthenticated);
+  const isBurgerReady: boolean =
     constructorItems.bun._id && constructorItems.ingredients.length;
 
   const onOrderClick = () => {

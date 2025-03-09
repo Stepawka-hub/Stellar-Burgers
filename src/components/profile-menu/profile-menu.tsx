@@ -9,7 +9,7 @@ import {
 
 export const ProfileMenu: FC = () => {
   const dispatch = useDispatch();
-  const logoutRequest = useSelector(getLogoutUserRequest);
+  const logoutRequest: boolean = useSelector(getLogoutUserRequest);
   const { pathname } = useLocation();
 
   const handleLogout = () => {
