@@ -30,6 +30,7 @@ export const ResetPasswordUI: FC<ResetPasswordUIProps> = ({
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             name='password'
+            minLength={6}
           />
         </div>
         <div className='pb-6'>

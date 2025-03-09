@@ -28,7 +28,7 @@ export const ForgotPasswordUI: FC<PageUIProps> = ({
             value={email}
             name='email'
             error={false}
-            errorText=''
+            errorText={''}
             size='default'
           />
         </div>

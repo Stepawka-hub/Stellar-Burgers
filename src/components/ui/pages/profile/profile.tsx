@@ -45,8 +45,8 @@ export const ProfileUI: FC<ProfileUIProps> = ({
         </div>
         <div className='pb-6'>
           <Input
-            type={'email'}
-            placeholder={'E-mail'}
+            type='email'
+            placeholder='E-mail'
             onChange={handleInputChange}
             value={formValue.email}
             name={'email'}
@@ -64,10 +64,11 @@ export const ProfileUI: FC<ProfileUIProps> = ({
             onChange={handleInputChange}
             value={formValue.password}
             name={'password'}
-            error={!(formValue.password.length < 8)}
+            error={false}
             errorText={''}
             size={'default'}
             icon={'EditIcon'}
+            minLength={6}
             disabled={updateUserRequest}
           />
         </div>

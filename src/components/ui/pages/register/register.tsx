@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import {
   Input,
   Button,
@@ -48,7 +48,7 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               value={email}
               name={'email'}
               error={false}
-              errorText=''
+              errorText={''}
               size={'default'}
             />
           </div>
@@ -57,6 +57,7 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               name='password'
+              minLength={6}
             />
           </div>
           <div className={`pb-6 ${styles.button}`}>
