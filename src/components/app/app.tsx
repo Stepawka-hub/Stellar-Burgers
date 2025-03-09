@@ -145,19 +145,21 @@ const App = () => {
               }
             />
           </Routes>
+
+          <Routes>
+            <Route
+              path='/profile/orders/:number'
+              element={
+                <ProtectedRoute>
+                  <Modal title='Заказы' onClose={onClose}>
+                    <OrderInfo />
+                  </Modal>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </>
       )}
-
-      {/* <Routes>
-        <Route
-          path='/profile/orders/:number'
-          element={
-            <Modal title='Заказы' onClose={() => {}}>
-              <ProfileOrders />
-            </Modal>
-          }
-        />
-      </Routes>  */}
     </div>
   );
 };
