@@ -3,24 +3,27 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useParams } from 'react-router-dom';
-import { getPreviewOrderSelector } from '../../services/selectors/feedSelectors';
 import { useDispatch, useSelector } from '../../services/store';
 import { getIngredientsSelector } from '../../services/slices/ingredientsSlice';
-import { setPreviewOrderNumber } from '../../services/slices/feedSlice';
+import {
+  getOrderByNumber,
+  getPreviewOrder,
+  setPreviewOrder
+} from '../../services/slices/feedSlice';
 
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
   const { number } = useParams<'number'>();
-  const orderData = useSelector(getPreviewOrderSelector);
+  const orderData = useSelector(getPreviewOrder);
   const ingredients: TIngredient[] = useSelector(getIngredientsSelector);
 
   useEffect(() => {
     if (number) {
-      dispatch(setPreviewOrderNumber(Number(number)));
+      dispatch(getOrderByNumber(Number(number)));
     }
 
     return () => {
-      dispatch(setPreviewOrderNumber(null));
+      dispatch(setPreviewOrder(null));
     };
   }, [number]);
 

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getIngredients } from './ingredientsSlice';
-import { getFeeds } from './feedSlice';
 import { checkUserAuth } from './userSlice';
 
 type TInitialState = {
@@ -36,13 +35,8 @@ export const initializeApp = createAsyncThunk(
   'app/initialize',
   async (_, { dispatch }) => {
     const getIngredientsPromise = dispatch(getIngredients());
-    const getFeedsPromise = dispatch(getFeeds());
     const checkAuthPromise = dispatch(checkUserAuth());
-    return await Promise.all([
-      getIngredientsPromise,
-      getFeedsPromise,
-      checkAuthPromise
-    ]);
+    return await Promise.all([getIngredientsPromise, checkAuthPromise]);
   }
 );
 

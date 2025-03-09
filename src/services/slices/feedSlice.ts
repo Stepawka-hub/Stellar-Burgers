@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getFeedsApi } from '@api';
-import { TOrdersData } from '@utils-types';
+import { getFeedsApi, getOrderByNumberApi, TOrderResponse } from '@api';
+import { TOrder, TOrdersData } from '@utils-types';
 
 type TInitialState = {
   feed: TOrdersData;
-  previewOrderNumber: number | null;
+  previewOrder: TOrder | null;
   isFetchingFeeds: boolean;
 };
 
@@ -14,7 +14,7 @@ const initialState: TInitialState = {
     total: 0,
     totalToday: 0
   },
-  previewOrderNumber: null,
+  previewOrder: null,
   isFetchingFeeds: true
 };
 
@@ -22,17 +22,14 @@ const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {
-    setPreviewOrderNumber: (
-      state,
-      { payload }: PayloadAction<number | null>
-    ) => {
-      state.previewOrderNumber = payload;
+    setPreviewOrder: (state, { payload }: PayloadAction<TOrder | null>) => {
+      state.previewOrder = payload;
     }
   },
   selectors: {
     getFeedSelector: (state) => state.feed,
     getOrdersSelector: (state) => state.feed.orders,
-    getPreviewOrderNumber: (state) => state.previewOrderNumber,
+    getPreviewOrder: (state) => state.previewOrder,
     getIsFetchingFeeds: (state) => state.isFetchingFeeds
   },
   extraReducers: (builder) => {
@@ -49,19 +46,31 @@ const feedSlice = createSlice({
       )
       .addCase(getFeeds.rejected, (state) => {
         state.isFetchingFeeds = false;
-      });
+      })
+      .addCase(
+        getOrderByNumber.fulfilled,
+        (state, { payload }: PayloadAction<TOrderResponse>) => {
+          state.previewOrder = payload.orders[0];
+        }
+      );
   }
 });
 
-export const getFeeds = createAsyncThunk('feed/getAll', async () =>
-  getFeedsApi()
+export const getOrderByNumber = createAsyncThunk(
+  'feed/getOrderByNumber',
+  async (number: number) => await getOrderByNumberApi(number)
+);
+
+export const getFeeds = createAsyncThunk(
+  'feed/getFeedsInfo',
+  async () => await getFeedsApi()
 );
 
 export const reducer = feedSlice.reducer;
-export const { setPreviewOrderNumber } = feedSlice.actions;
+export const { setPreviewOrder } = feedSlice.actions;
 export const {
   getFeedSelector,
   getOrdersSelector,
-  getPreviewOrderNumber,
+  getPreviewOrder,
   getIsFetchingFeeds
 } = feedSlice.selectors;
