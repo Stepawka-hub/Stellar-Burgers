@@ -8,7 +8,6 @@ const checkResponse = <T>(res: Response): Promise<T> =>
 
 type TServerResponse<T> = {
   success: boolean;
-  message?: string;
 } & T;
 
 type TRefreshResponse = TServerResponse<{
@@ -100,7 +99,7 @@ export const getOrdersApi = () =>
     return Promise.reject(data);
   });
 
-type TNewOrderResponse = TServerResponse<{
+export type TNewOrderResponse = TServerResponse<{
   order: TOrder;
   name: string;
 }>;

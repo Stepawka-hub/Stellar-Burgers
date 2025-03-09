@@ -15,6 +15,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   orderRequest,
   price,
   orderModalData,
+  isBurgerReady,
   onOrderClick,
   closeOrderModal
 }) => {
@@ -86,6 +87,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
           type='primary'
           size='large'
           children='Оформить заказ'
+          disabled={!isBurgerReady}
           onClick={onOrderClick}
         />
       </div>

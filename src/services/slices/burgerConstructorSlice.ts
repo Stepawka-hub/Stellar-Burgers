@@ -1,4 +1,10 @@
-import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
+import { orderBurgerApi, TNewOrderResponse } from '@api';
+import {
+  createAsyncThunk,
+  createSlice,
+  nanoid,
+  PayloadAction
+} from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
 type TInitialState = {
@@ -60,14 +66,45 @@ const burgerConstructorSlice = createSlice({
 
       // Размещаем наш ингредиент на новую позицию
       state.constructorItems.ingredients.splice(toIndex, 0, ingredientToMove);
+    },
+    setModalOrderData: (state, { payload }: PayloadAction<TOrder | null>) => {
+      state.orderModalData = payload;
     }
   },
   selectors: {
     getConstructorItems: (state) => state.constructorItems,
     getOrderRequest: (state) => state.orderRequest,
     getOrderModalData: (state) => state.orderModalData
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(orderBurger.pending, (state) => {
+        state.orderRequest = true;
+        state.constructorItems = {
+          bun: {
+            id: null,
+            price: 0
+          },
+          ingredients: []
+        };
+      })
+      .addCase(
+        orderBurger.fulfilled,
+        (state, { payload }: PayloadAction<TNewOrderResponse>) => {
+          state.orderModalData = payload.order;
+          state.orderRequest = false;
+        }
+      )
+      .addCase(orderBurger.rejected, (state) => {
+        state.orderRequest = false;
+      });
   }
 });
+
+export const orderBurger = createAsyncThunk(
+  'constructor/orderBurger',
+  async (ingredients: string[]) => orderBurgerApi(ingredients)
+);
 
 export const reducer = burgerConstructorSlice.reducer;
 export const { getConstructorItems, getOrderRequest, getOrderModalData } =
@@ -76,5 +113,6 @@ export const {
   addIngredient,
   removeIngredient,
   setOrderRequest,
-  moveIngredient
+  moveIngredient,
+  setModalOrderData
 } = burgerConstructorSlice.actions;
