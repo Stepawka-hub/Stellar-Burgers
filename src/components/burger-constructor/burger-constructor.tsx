@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from 'react';
-import { TConstructorIngredient, TOrder } from '@utils-types';
+import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
 import {
@@ -30,7 +30,12 @@ export const BurgerConstructor: FC = () => {
     if (!isAuthenticated) return navigate('/login');
 
     dispatch(
-      orderBurger([constructorItems.bun, ...constructorItems.ingredients])
+      orderBurger([
+        constructorItems.bun._id,
+        ...constructorItems.ingredients.map(
+          (i: TConstructorIngredient) => i._id
+        )
+      ])
     );
   };
 
@@ -38,6 +43,7 @@ export const BurgerConstructor: FC = () => {
     if (orderModalData) {
       dispatch(setModalOrderData(null));
     }
+
     if (orderRequest) {
       dispatch(setOrderRequest(false));
     }

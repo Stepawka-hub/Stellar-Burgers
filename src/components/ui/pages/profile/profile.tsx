@@ -58,11 +58,14 @@ export const ProfileUI: FC<ProfileUIProps> = ({
           />
         </div>
         <div className='pb-6'>
-          <PasswordInput
+          <Input
+            type={'password'}
             placeholder={'Пароль'}
             onChange={handleInputChange}
             value={formValue.password}
             name={'password'}
+            error={!(formValue.password.length < 8)}
+            errorText={''}
             size={'default'}
             icon={'EditIcon'}
             disabled={updateUserRequest}
