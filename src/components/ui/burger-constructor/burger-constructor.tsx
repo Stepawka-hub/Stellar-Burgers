@@ -22,7 +22,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   const isBunSelected = constructorItems.bun.id !== null;
 
   return (
-    <section className={styles.burger_constructor}>
+    <section
+      className={styles.burger_constructor}
+      data-cyid='burger-constructor'
+    >
       {isBunSelected ? (
         <div className={`${styles.element} mb-4 mr-4`}>
           <ConstructorElement
@@ -31,11 +34,13 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             text={`${constructorItems.bun.name} (верх)`}
             price={constructorItems.bun.price}
             thumbnail={constructorItems.bun.image}
+            data-cyid='bun-top'
           />
         </div>
       ) : (
         <div
           className={`${styles.noBuns} ${styles.noBunsTop} ml-8 mb-4 mr-5 text text_type_main-default`}
+          data-cyid='no-bun-top'
         >
           Выберите булки
         </div>
@@ -55,6 +60,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         ) : (
           <div
             className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
+            data-cyid='no-filling'
           >
             Выберите начинку
           </div>
@@ -68,11 +74,13 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
             text={`${constructorItems.bun.name} (низ)`}
             price={constructorItems.bun.price}
             thumbnail={constructorItems.bun.image}
+            data-cyid='bun-bottom'
           />
         </div>
       ) : (
         <div
           className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
+          data-cyid='no-bun-bottom'
         >
           Выберите булки
         </div>
