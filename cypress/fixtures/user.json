@@ -1,0 +1,7 @@
+{
+  "success": 200,
+  "user": {
+    "email": "mock-address@mail.ru",
+    "name": "Fake name"
+  }
+}
