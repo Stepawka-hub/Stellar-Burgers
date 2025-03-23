@@ -1,107 +1,114 @@
-import { mount } from 'cypress/react18';
+import { host, cySelector } from '../../support/index';
+import { TIngredient } from '../../../src/utils/types';
 
-const host = 'http://localhost:4000';
-const cySelector = (value: string) => `[data-cyid=${value}]`;
+let ingredients: TIngredient[] = [];
 
-describe('Проверка доступности страницы', () => {
-  it(`Страница должна быть доступна по адресу ${host}`, () => {
-    cy.visit(host);
+beforeEach(() => {
+  // Перехватываем запрос
+  cy.intercept('GET', '/api/ingredients', {
+    fixture: 'ingredients.json'
+  }).as('ingredients');
+
+  cy.visit(host);
+
+  cy.wait('@ingredients').then((inter) => {
+    ingredients = inter?.response?.body.data;
   });
 });
 
 describe('Проверка модальных окон (Ингредиенты)', () => {
+  let ingredient: TIngredient;
+
   beforeEach(() => {
-    cy.visit(host);
+    ingredient = ingredients[0];
   });
 
-  const ingredient = {
-    _id: '643d69a5c3f7b9001cfa093c',
-    name: 'Краторная булка N-200i',
-    type: 'bun',
-    proteins: 80,
-    fat: 24,
-    carbohydrates: 53,
-    calories: 420,
-    price: 1255,
-    image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-    image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-    image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-    __v: 0
-  };
-
   it('Открытие модального окна при клике на ингредиент', () => {
-    // Клик по карточке ингредиента
+    cy.log('Клик по карточке ингредиента');
     cy.get(cySelector(ingredient._id)).click();
 
-    // Проверка, что модальное окно открылось
+    cy.log('Проверка, что модальное окно открылось');
     cy.get(cySelector('modal')).should('exist');
   });
 
-  it('Проверка, что в модальном окне указан правильный ингредиент', () => {
-    // Клик по карточке ингредиента
+  it('В модальном окне указан правильный ингредиент', () => {
+    cy.log('Клик по карточке ингредиента');
     cy.get(cySelector(ingredient._id)).click();
 
-    // Проверка, что в модальном окне указан правильный ингредиент
+    cy.log('Проверка, что в модальном окне указан правильный ингредиент');
     cy.get(cySelector('modal'))
       .find(cySelector('ingredient-name'))
       .should('contain', ingredient.name);
   });
 
   it('Закрытие модального окна при клике по кнопке закрытия', () => {
-    // Клик по карточке ингредиента
+    cy.log('Клик по карточке ингредиента');
     cy.get(cySelector(ingredient._id)).click();
 
-    // Клик по кнопке закрытия модального окна
+    cy.log('Клик по кнопке закрытия модального окна');
     cy.get(cySelector('btn-close-modal')).click();
 
-    // Модального окна не должно быть
+    cy.log('Модального окна не должно быть');
     cy.get(cySelector('modal')).should('not.exist');
   });
 
   it('Закрытие модального окна при клике по оверлею', () => {
-    // Клик по карточке ингредиента
+    cy.log('Клик по карточке ингредиента');
     cy.get(cySelector(ingredient._id)).click();
 
-    // Клик по оверлею
+    cy.log('Клик по оверлею');
     cy.get(cySelector('overlay')).click({ force: true });
 
-    // Модального окна не должно быть
+    cy.log('Модального окна не должно быть');
     cy.get(cySelector('modal')).should('not.exist');
   });
 });
 
-// describe('Проверка работы конструктора', () => {
-//   beforeEach(() => {
-//     cy.visit(host);
-//   });
+describe('Работа конструктора', () => {
+  it('Проверка, что конструктор пуст', () => {
+    cy.log('Проверяем, что конструктор пуст');
+    cy.get(cySelector('burger-constructor'))
+      .find(cySelector('no-bun-top'))
+      .should('exist');
 
-//   const bun = {
-//     _id: '643d69a5c3f7b9001cfa093c',
-//     name: 'Краторная булка N-200i',
-//     type: 'bun',
-//     proteins: 80,
-//     fat: 24,
-//     carbohydrates: 53,
-//     calories: 420,
-//     price: 1255,
-//     image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-//     image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-//     image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-//     __v: 0
-//   };
+    cy.get(cySelector('burger-constructor'))
+      .find(cySelector('no-filling'))
+      .should('exist');
 
-//   it('Добавление ингредиента в конструктор', () => {
-//     // Проверяем, что конструктор пуст
-//     cy.get(cySelector('burger-constructor'))
-//       .find(cySelector('no-bun-top'))
-//       .should('exist');
+    cy.get(cySelector('burger-constructor'))
+      .find(cySelector('no-bun-bottom'))
+      .should('exist');
+  });
 
-//     cy.get(cySelector('burger-constructor'))
-//       .find(cySelector('no-filling'))
-//       .should('exist');
+  it('Добавление булочки в конструктор', () => {
+    const bun = ingredients.filter((i) => i.type === 'bun')[0];
 
-//     cy.get(cySelector('burger-constructor'))
-//       .find(cySelector('no-bun-bottom'))
-//       .should('exist');
-//   });
-// });
+    cy.log('Клик по кнопке добавления булочки');
+    cy.get(cySelector(bun._id)).contains('Добавить').click();
+
+    cy.log('Верхняя и нижняя секция не пусты');
+    cy.get(cySelector('bun-top')).should('exist');
+    cy.get(cySelector('bun-bottom')).should('exist');
+
+    cy.log('Отображается корректная булочка');
+    cy.get(cySelector('bun-top')).contains(bun.name).should('exist');
+    cy.get(cySelector('bun-bottom')).contains(bun.name).should('exist');
+  });
+
+  it('Добавление ингредиентов в конструктор', () => {
+    const elements = ingredients.filter((i) => i.type !== 'bun');
+
+    cy.log('Клик по кнопке добавления ингредиента');
+    elements.forEach((el) => {
+      cy.get(cySelector(el._id)).contains('Добавить').click();
+    });
+
+    cy.log('Секция для ингредиентов не пуста');
+    cy.get(cySelector('filling')).should('exist');
+
+    cy.log('Секция содержит выбранные ингредиенты');
+    elements.forEach((el) => {
+      cy.get(cySelector('filling')).contains(el.name).should('exist');
+    });
+  });
+});

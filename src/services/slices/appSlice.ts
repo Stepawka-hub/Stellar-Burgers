@@ -19,13 +19,13 @@ const appSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getIngredients.pending, (state) => {
+      .addCase(initializeApp.pending, (state) => {
         state.initialized = false;
       })
-      .addCase(getIngredients.rejected, (state) => {
+      .addCase(initializeApp.rejected, (state) => {
         state.initialized = false;
       })
-      .addCase(getIngredients.fulfilled, (state) => {
+      .addCase(initializeApp.fulfilled, (state) => {
         state.initialized = true;
       });
   }
