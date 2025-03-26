@@ -10,6 +10,7 @@ import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 type TInitialState = {
   constructorItems: any;
   orderRequest: boolean;
+  orderError: string | null;
   orderModalData: TOrder | null;
 };
 
@@ -22,6 +23,7 @@ export const initialState: TInitialState = {
     ingredients: []
   },
   orderRequest: false,
+  orderError: null,
   orderModalData: null
 };
 
@@ -83,6 +85,7 @@ const burgerConstructorSlice = createSlice({
     builder
       .addCase(orderBurger.pending, (state) => {
         state.orderRequest = true;
+        state.orderError = null;
         state.constructorItems = {
           bun: {
             id: null,
@@ -95,10 +98,12 @@ const burgerConstructorSlice = createSlice({
         orderBurger.fulfilled,
         (state, { payload }: PayloadAction<TNewOrderResponse>) => {
           state.orderModalData = payload.order;
+          state.orderError = null;
           state.orderRequest = false;
         }
       )
-      .addCase(orderBurger.rejected, (state) => {
+      .addCase(orderBurger.rejected, (state, { error }) => {
+        state.orderError = error.message || null;
         state.orderRequest = false;
       });
   }

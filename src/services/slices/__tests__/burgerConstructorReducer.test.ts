@@ -1,11 +1,13 @@
-import { nanoid } from '@reduxjs/toolkit';
+import { configureStore, nanoid } from '@reduxjs/toolkit';
 import {
   addIngredient,
   moveIngredient,
+  orderBurger,
   reducer,
   removeIngredient
 } from '../burgerConstructorSlice';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
+import { TNewOrderResponse } from '@api';
 
 const mockIngredients: TIngredient[] = [
   {
@@ -210,30 +212,31 @@ const mockBuns: TIngredient[] = [
 ];
 
 describe('Работа редьюсера конструктора', () => {
-  const constructorIngredients: TConstructorIngredient[] = [
-    {
-      id: nanoid(),
-      ...mockIngredients[0]
-    },
-    {
-      id: nanoid(),
-      ...mockIngredients[1]
-    }
-  ];
-
-  const initialState = {
-    constructorItems: {
-      bun: {
-        id: null,
-        price: 0
-      },
-      ingredients: [...constructorIngredients]
-    },
-    orderRequest: false,
-    orderModalData: null
-  };
-
   describe('Тесты синхронных экшенов', () => {
+    const constructorIngredients: TConstructorIngredient[] = [
+      {
+        id: nanoid(),
+        ...mockIngredients[0]
+      },
+      {
+        id: nanoid(),
+        ...mockIngredients[1]
+      }
+    ];
+
+    const initialState = {
+      constructorItems: {
+        bun: {
+          id: null,
+          price: 0
+        },
+        ingredients: [...constructorIngredients]
+      },
+      orderError: null,
+      orderRequest: false,
+      orderModalData: null
+    };
+
     it('Добавление ингредиента в конструктор', () => {
       const newState = reducer(initialState, addIngredient(mockIngredients[0]));
 
@@ -278,7 +281,80 @@ describe('Работа редьюсера конструктора', () => {
     });
   });
 
+  /* Избыточно делать тестирование самой санки (с мокированным fetch), так как тесты ниже 
+  (диспатчащие экшены - pending, fulfilled, rejected), уже покрывают всю проверяемую функциональность */
   describe('Тесты асинхронных экшенов', () => {
-    it('Заказ бургера', async () => {});
+    const initialState = {
+      constructorItems: {
+        bun: {
+          id: null,
+          price: 0
+        },
+        ingredients: []
+      },
+      orderError: null,
+      orderRequest: false,
+      orderModalData: null
+    };
+
+    it('Заказ бургера - Начало запроса', () => {
+      const store = configureStore({
+        reducer,
+        preloadedState: initialState
+      });
+
+      store.dispatch(orderBurger.pending('test-request-id', []));
+
+      const { orderRequest, orderError } = store.getState();
+
+      expect(orderRequest).toBe(true);
+      expect(orderError).toBe(null);
+    });
+
+    it('Заказ бургера - Успешное выполнение запроса', () => {
+      const store = configureStore({
+        reducer,
+        preloadedState: initialState
+      });
+
+      const mockOrderResponse: TNewOrderResponse = {
+        success: true,
+        name: 'Краторный био-марсианский бургер',
+        order: {
+          ingredients: ['643d69a5c3f7b9001cfa093c', '643d69a5c3f7b9001cfa0941'],
+          _id: '67e063956fce7d001db5bd6c',
+          status: 'done',
+          name: 'Краторный био-марсианский бургер',
+          createdAt: '2025-03-23T19:40:05.812Z',
+          updatedAt: '2025-03-23T19:40:06.493Z',
+          number: 71974
+        }
+      };
+
+      store.dispatch(
+        orderBurger.fulfilled(mockOrderResponse, 'test-request-id', [])
+      );
+
+      const { orderModalData, orderRequest, orderError } = store.getState();
+
+      expect(orderModalData).toEqual(mockOrderResponse.order);
+      expect(orderRequest).toBe(false);
+      expect(orderError).toBe(null);
+    });
+
+    it('Заказ бургера - Возникновение ошибки', () => {
+      const store = configureStore({
+        reducer,
+        preloadedState: initialState
+      });
+      const mockError = new Error('Error when creating an order');
+
+      store.dispatch(orderBurger.rejected(mockError, 'test-request-id', []));
+
+      const { orderRequest, orderError } = store.getState();
+
+      expect(orderRequest).toBe(false);
+      expect(orderError).toBe(mockError.message);
+    });
   });
 });
