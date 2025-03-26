@@ -297,7 +297,7 @@ describe('Работа редьюсера конструктора', () => {
       orderModalData: null
     };
 
-    const testRequestId = 'test-request-id';
+    const testRequestId = 'test-constructor-request-id';
 
     it('Заказ бургера - Начало запроса', () => {
       const store = configureStore({

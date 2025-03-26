@@ -29,7 +29,7 @@ describe('Работа редьюсера ingredients', () => {
   });
 
   describe('Тесты асинхронных экшенов', () => {
-    const testRequestId = 'test-request-id';
+    const testRequestId = 'test-ingredients-request-id';
 
     it('Получение ингредиента - Начало запроса', () => {
       const store = configureStore({

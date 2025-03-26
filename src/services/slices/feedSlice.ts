@@ -15,7 +15,7 @@ export const initialState: TInitialState = {
     totalToday: 0
   },
   previewOrder: null,
-  isFetchingFeeds: true
+  isFetchingFeeds: false
 };
 
 const feedSlice = createSlice({
