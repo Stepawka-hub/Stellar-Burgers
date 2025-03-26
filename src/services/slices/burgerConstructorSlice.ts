@@ -7,7 +7,7 @@ import {
 } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 
-type TInitialState = {
+export type TInitialState = {
   constructorItems: any;
   orderRequest: boolean;
   orderError: string | null;

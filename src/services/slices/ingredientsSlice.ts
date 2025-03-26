@@ -2,7 +2,7 @@ import { getIngredientsApi } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 
-type TInitialState = {
+export type TInitialState = {
   ingredients: TIngredient[];
   isIngredientsLoading: boolean;
   getIngredientsError: string | null;

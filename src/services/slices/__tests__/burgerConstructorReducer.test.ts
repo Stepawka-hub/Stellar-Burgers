@@ -4,7 +4,8 @@ import {
   moveIngredient,
   orderBurger,
   reducer,
-  removeIngredient
+  removeIngredient,
+  TInitialState
 } from '../burgerConstructorSlice';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { TNewOrderResponse } from '@api';
@@ -284,7 +285,7 @@ describe('Работа редьюсера конструктора', () => {
   /* Избыточно делать тестирование самой санки (с мокированным fetch), так как тесты ниже 
   (диспатчащие экшены - pending, fulfilled, rejected), уже покрывают всю проверяемую функциональность */
   describe('Тесты асинхронных экшенов', () => {
-    const initialState = {
+    const initialState: TInitialState = {
       constructorItems: {
         bun: {
           id: null,

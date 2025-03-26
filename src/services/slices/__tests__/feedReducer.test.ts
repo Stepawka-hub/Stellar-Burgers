@@ -1,7 +1,7 @@
+import { TFeedsResponse } from '@api';
 import { configureStore } from '@reduxjs/toolkit';
-import { getFeeds, reducer, setPreviewOrder } from '../feedSlice';
-import { TFeedsResponse, TOrderResponse } from '@api';
 import { TOrder } from '@utils-types';
+import { getFeeds, reducer, setPreviewOrder } from '../feedSlice';
 
 describe('Работа редьюсера feed', () => {
   const initialState = {

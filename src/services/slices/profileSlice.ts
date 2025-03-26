@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getOrdersApi } from '@api';
 import { TOrder } from '@utils-types';
 
-type TInitialState = {
+export type TInitialState = {
   orders: TOrder[];
   isFetchingOrders: boolean;
 };
