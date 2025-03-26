@@ -297,13 +297,15 @@ describe('Работа редьюсера конструктора', () => {
       orderModalData: null
     };
 
+    const testRequestId = 'test-request-id';
+
     it('Заказ бургера - Начало запроса', () => {
       const store = configureStore({
         reducer,
         preloadedState: initialState
       });
 
-      store.dispatch(orderBurger.pending('test-request-id', []));
+      store.dispatch(orderBurger.pending(testRequestId, []));
 
       const { orderRequest, orderError } = store.getState();
 
@@ -332,7 +334,7 @@ describe('Работа редьюсера конструктора', () => {
       };
 
       store.dispatch(
-        orderBurger.fulfilled(mockOrderResponse, 'test-request-id', [])
+        orderBurger.fulfilled(mockOrderResponse, testRequestId, [])
       );
 
       const { orderModalData, orderRequest, orderError } = store.getState();
@@ -349,7 +351,7 @@ describe('Работа редьюсера конструктора', () => {
       });
       const mockError = new Error('Error when creating an order');
 
-      store.dispatch(orderBurger.rejected(mockError, 'test-request-id', []));
+      store.dispatch(orderBurger.rejected(mockError, testRequestId, []));
 
       const { orderRequest, orderError } = store.getState();
 
