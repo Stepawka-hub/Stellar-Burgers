@@ -7,7 +7,7 @@ type TInitialState = {
   isFetchingOrders: boolean;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   orders: [],
   isFetchingOrders: false
 };

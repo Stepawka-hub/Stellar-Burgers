@@ -13,7 +13,7 @@ type TInitialState = {
   orderModalData: TOrder | null;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   constructorItems: {
     bun: {
       id: null,
@@ -34,7 +34,10 @@ const burgerConstructorSlice = createSlice({
         if (payload.type === 'bun') {
           state.constructorItems.bun = payload;
         } else {
-          state.constructorItems.ingredients.push(payload);
+          state.constructorItems.ingredients = [
+            ...state.constructorItems.ingredients,
+            payload
+          ];
         }
       },
       prepare: (ingredient: TIngredient) => {

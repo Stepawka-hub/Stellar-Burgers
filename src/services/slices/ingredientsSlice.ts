@@ -8,7 +8,7 @@ type TInitialState = {
   previewIngredientId: string | null;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   ingredients: [],
   isIngredientsLoading: false,
   previewIngredientId: null

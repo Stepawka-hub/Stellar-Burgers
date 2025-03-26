@@ -8,7 +8,7 @@ type TInitialState = {
   isFetchingFeeds: boolean;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   feed: {
     orders: [],
     total: 0,

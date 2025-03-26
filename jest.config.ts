@@ -14,13 +14,13 @@ const config: JestConfigWithTsJest = {
   // clearMocks: false,
 
   // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: true,
+  // collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: 'coverage',
+  // coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -85,7 +85,16 @@ const config: JestConfigWithTsJest = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  moduleNameMapper: {
+    '@pages': ['<rootDir>/pages'],
+    '@components': ['<rootDir>/components'],
+    '@ui': ['<rootDir>/components/ui'],
+    '@ui-pages': ['<rootDir>/components/ui/pages'],
+    '@utils-types': ['<rootDir>/utils/types'],
+    '@api': ['<rootDir>/utils/burger-api.ts'],
+    '@slices': ['<rootDir>/services/slices'],
+    '@selectors': ['<rootDir>/services/selectors']
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -118,12 +127,10 @@ const config: JestConfigWithTsJest = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  // rootDir: undefined,
+  rootDir: 'src',
 
   // A list of paths to directories that Jest should use to search for files in
-  // roots: [
-  //   "<rootDir>"
-  // ],
+  roots: ['<rootDir>'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -173,12 +180,7 @@ const config: JestConfigWithTsJest = {
   transform: {
     // '^.+\\.[tj]sx?$' для обработки файлов js/ts с помощью `ts-jest`
     // '^.+\\.m?[tj]sx?$' для обработки файлов js/ts/mjs/mts с помощью `ts-jest`
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        // настройки для ts-jest
-      }
-    ]
+    '^.+\\.tsx?$': ['ts-jest', {}]
   }
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation

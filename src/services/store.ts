@@ -12,7 +12,7 @@ import {
   useSelector as selectorHook
 } from 'react-redux';
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   app: appReducer,
   ingredients: ingredientReducer,
   burgerConstructor: burgerConstructorReducer,

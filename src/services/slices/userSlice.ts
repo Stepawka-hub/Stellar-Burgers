@@ -35,7 +35,7 @@ export type TInitialState = {
   updateUserError: string;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   isAuthChecked: false,
   isAuthenticated: false,
   user: null,

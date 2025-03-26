@@ -6,7 +6,7 @@ type TInitialState = {
   initialized: boolean;
 };
 
-const initialState: TInitialState = {
+export const initialState: TInitialState = {
   initialized: false
 };
 
