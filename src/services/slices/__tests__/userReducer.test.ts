@@ -45,8 +45,6 @@ describe('Работа редьюсера user', () => {
       expect(user).toBe(null);
       expect(isAuthenticated).toBe(false);
     });
-
-    it('Изменение ')
   });
 
   // describe('Тесты асинхронных экшенов', () => {

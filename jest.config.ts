@@ -1,4 +1,5 @@
-import type { JestConfigWithTsJest } from 'ts-jest';
+import { pathsToModuleNameMapper, JestConfigWithTsJest } from 'ts-jest';
+import { compilerOptions } from './tsconfig.json';
 
 const config: JestConfigWithTsJest = {
   // All imported modules in your tests should be mocked automatically
@@ -84,18 +85,6 @@ const config: JestConfigWithTsJest = {
   //   "node"
   // ],
 
-  // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  moduleNameMapper: {
-    '@pages': ['<rootDir>/pages'],
-    '@components': ['<rootDir>/components'],
-    '@ui': ['<rootDir>/components/ui'],
-    '@ui-pages': ['<rootDir>/components/ui/pages'],
-    '@utils-types': ['<rootDir>/utils/types'],
-    '@api': ['<rootDir>/utils/burger-api.ts'],
-    '@slices': ['<rootDir>/services/slices'],
-    '@selectors': ['<rootDir>/services/selectors']
-  },
-
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
 
@@ -107,6 +96,8 @@ const config: JestConfigWithTsJest = {
 
   // A preset that is used as a base for Jest's configuration
   preset: 'ts-jest',
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -127,10 +118,10 @@ const config: JestConfigWithTsJest = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  rootDir: 'src',
+  // rootDir: 'src',
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: ['<rootDir>'],
+  // roots: ['<rootDir>'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
