@@ -1,10 +1,12 @@
 import { TFeedsResponse } from '@api';
 import { configureStore } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
-import { getFeeds, reducer, setPreviewOrder } from '../feedSlice';
+import { reducer, setPreviewOrder } from '../feedSlice';
+import { TFeedsState } from '../types/types';
+import { getFeeds } from 'src/services/thunks/feed';
 
 describe('Работа редьюсера feed', () => {
-  const initialState = {
+  const initialState: TFeedsState = {
     feed: {
       orders: [],
       total: 0,

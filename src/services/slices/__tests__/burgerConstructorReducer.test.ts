@@ -2,13 +2,13 @@ import { configureStore, nanoid } from '@reduxjs/toolkit';
 import {
   addIngredient,
   moveIngredient,
-  orderBurger,
   reducer,
-  removeIngredient,
-  TInitialState
+  removeIngredient
 } from '../burgerConstructorSlice';
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { TNewOrderResponse } from '@api';
+import { TBurgerConstructorState } from '../types/types';
+import { orderBurger } from 'src/services/thunks/burgerConstructor';
 
 const mockIngredients: TIngredient[] = [
   {
@@ -225,7 +225,7 @@ describe('Работа редьюсера конструктора', () => {
       }
     ];
 
-    const initialState = {
+    const initialState: TBurgerConstructorState = {
       constructorItems: {
         bun: {
           id: null,
@@ -285,7 +285,7 @@ describe('Работа редьюсера конструктора', () => {
   /* Избыточно делать тестирование самой санки (с мокированным fetch), так как тесты ниже 
   (диспатчащие экшены - pending, fulfilled, rejected), уже покрывают всю проверяемую функциональность */
   describe('Тесты асинхронных экшенов', () => {
-    const initialState: TInitialState = {
+    const initialState: TBurgerConstructorState = {
       constructorItems: {
         bun: {
           id: null,

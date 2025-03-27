@@ -1,6 +1,7 @@
 import { TAuthResponse } from '@api';
-import { TInitialState } from '../slices/userSlice';
 import { setCookie } from '../../utils/cookie';
+import { TError } from '@utils-types';
+import { TUserState } from '@slices/types/types';
 
 export enum UserAction {
   login = 'loginUser',
@@ -9,29 +10,26 @@ export enum UserAction {
   update = 'updateUser'
 }
 
-export const handlePending = (state: TInitialState, actionType: UserAction) => {
+export const handlePending = (state: TUserState, actionType: UserAction) => {
   state[`${actionType}Request`] = true;
   state[`${actionType}Error`] = '';
 };
 
 export const handleRejected = (
-  state: TInitialState,
+  state: TUserState,
   actionType: UserAction,
-  errorMessage: string = ''
+  errorMessage: TError = null
 ) => {
   state[`${actionType}Request`] = false;
   state[`${actionType}Error`] = errorMessage;
 };
 
-export const handleFulfilled = (
-  state: TInitialState,
-  actionType: UserAction
-) => {
+export const handleFulfilled = (state: TUserState, actionType: UserAction) => {
   state[`${actionType}Request`] = false;
 };
 
 export const handleSuccessLogin = (
-  state: TInitialState,
+  state: TUserState,
   payload: TAuthResponse
 ) => {
   state.user = payload.user;

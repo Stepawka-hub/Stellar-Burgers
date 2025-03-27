@@ -1,16 +1,6 @@
-import {
-  getUserApi,
-  loginUserApi,
-  logoutApi,
-  registerUserApi,
-  TAuthResponse,
-  TLoginData,
-  TRegisterData,
-  updateUserApi
-} from '@api';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TUser } from '@utils-types';
-import { deleteCookie, getCookie } from '../../utils/cookie';
+import { TAuthResponse } from '@api';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TError, TUser } from '@utils-types';
 import {
   handleFulfilled,
   handlePending,
@@ -18,24 +8,16 @@ import {
   handleSuccessLogin,
   UserAction
 } from '../helpers/userHelper';
+import {
+  getUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  updateUser
+} from '@thunks/user';
+import { TUserState } from './types/types';
 
-export type TInitialState = {
-  isAuthChecked: boolean;
-  isAuthenticated: boolean;
-  user: TUser | null;
-
-  loginUserRequest: boolean;
-  registerUserRequest: boolean;
-  logoutUserRequest: boolean;
-  updateUserRequest: boolean;
-
-  loginUserError: string;
-  registerUserError: string;
-  logoutUserError: string;
-  updateUserError: string;
-};
-
-export const initialState: TInitialState = {
+export const initialState: TUserState = {
   isAuthChecked: false,
   isAuthenticated: false,
   user: null,
@@ -45,10 +27,10 @@ export const initialState: TInitialState = {
   logoutUserRequest: false,
   updateUserRequest: false,
 
-  loginUserError: '',
-  registerUserError: '',
-  logoutUserError: '',
-  updateUserError: ''
+  loginUserError: null,
+  registerUserError: null,
+  logoutUserError: null,
+  updateUserError: null
 };
 
 const userSlice = createSlice({
@@ -58,17 +40,17 @@ const userSlice = createSlice({
     setAuthChecked: (state) => {
       state.isAuthChecked = true;
     },
-    setLoginUserError: (state, { payload }: PayloadAction<string>) => {
-      state.loginUserError = payload;
-    },
-    setRegisterUserError: (state, { payload }: PayloadAction<string>) => {
-      state.registerUserError = payload;
-    },
     userLogout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
     },
-    setUpdateUserError: (state, { payload }: PayloadAction<string>) => {
+    setLoginUserError: (state, { payload }: PayloadAction<TError>) => {
+      state.loginUserError = payload;
+    },
+    setRegisterUserError: (state, { payload }: PayloadAction<TError>) => {
+      state.registerUserError = payload;
+    },
+    setUpdateUserError: (state, { payload }: PayloadAction<TError>) => {
       state.updateUserError = payload;
     }
   },
@@ -154,49 +136,6 @@ const userSlice = createSlice({
       });
   }
 });
-
-export const getUser = createAsyncThunk<TUser, void>(
-  'user/getUser',
-  async () => (await getUserApi()).user
-);
-
-export const checkUserAuth = createAsyncThunk(
-  'user/checkUserAuth',
-  async (_, { dispatch }) => {
-    if (getCookie('accessToken')) {
-      dispatch(getUser()).finally(() => {
-        dispatch(setAuthChecked());
-      });
-    } else {
-      dispatch(setAuthChecked());
-    }
-  }
-);
-
-export const registerUser = createAsyncThunk(
-  'user/register',
-  async (data: TRegisterData) => await registerUserApi(data)
-);
-
-export const loginUser = createAsyncThunk(
-  'user/login',
-  async (data: TLoginData) => await loginUserApi(data)
-);
-
-export const updateUser = createAsyncThunk(
-  'profile/updateUser',
-  async (user: Partial<TRegisterData>) => await updateUserApi(user)
-);
-
-export const logoutUser = createAsyncThunk(
-  'user/logout',
-  async (_, { dispatch }) =>
-    logoutApi().then(() => {
-      localStorage.removeItem('refreshToken');
-      deleteCookie('accessToken');
-      dispatch(userLogout());
-    })
-);
 
 export const reducer = userSlice.reducer;
 export const {

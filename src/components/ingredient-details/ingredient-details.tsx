@@ -2,9 +2,9 @@ import { FC, useEffect } from 'react';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
 import { useDispatch, useSelector } from '../../services/store';
-import { setPreviewIngredientId } from '../../services/slices/ingredientsSlice';
+import { setPreviewIngredientId } from '@slices/ingredientsSlice';
 import { useParams } from 'react-router-dom';
-import { getPreviewIngredient } from '../../services/selectors/ingredientsSelectors';
+import { getPreviewIngredient } from '@selectors/ingredientsSelectors';
 
 export const IngredientDetails: FC = () => {
   const dispatch = useDispatch();

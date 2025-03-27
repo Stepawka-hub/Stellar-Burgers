@@ -1,14 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import {
-  getIngredients,
-  reducer,
-  setPreviewIngredientId,
-  TInitialState
-} from '../ingredientsSlice';
+import { reducer, setPreviewIngredientId } from '../ingredientsSlice';
 import { TIngredient } from '@utils-types';
+import { TIngredientsState } from '../types/types';
+import { getIngredients } from '@thunks/ingredients';
 
 describe('Работа редьюсера ingredients', () => {
-  const initialState: TInitialState = {
+  const initialState: TIngredientsState = {
     ingredients: [],
     isIngredientsLoading: false,
     getIngredientsError: null,

@@ -1,15 +1,9 @@
-import { getIngredientsApi } from '@api';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
+import { TIngredientsState } from './types/types';
+import { getIngredients } from '@thunks/ingredients';
 
-export type TInitialState = {
-  ingredients: TIngredient[];
-  isIngredientsLoading: boolean;
-  getIngredientsError: string | null;
-  previewIngredientId: string | null;
-};
-
-export const initialState: TInitialState = {
+export const initialState: TIngredientsState = {
   ingredients: [],
   isIngredientsLoading: false,
   getIngredientsError: null,
@@ -52,11 +46,6 @@ const ingredientSlice = createSlice({
       });
   }
 });
-
-export const getIngredients = createAsyncThunk(
-  'ingredients/getAll',
-  async () => await getIngredientsApi()
-);
 
 export const reducer = ingredientSlice.reducer;
 export const { setPreviewIngredientId } = ingredientSlice.actions;

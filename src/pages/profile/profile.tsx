@@ -5,9 +5,9 @@ import {
   getUpdateUserError,
   getUpdateUserRequest,
   getUserSelector,
-  setUpdateUserError,
-  updateUser
-} from '../../services/slices/userSlice';
+  setUpdateUserError
+} from '@slices/userSlice';
+import { updateUser } from '@thunks/user';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ export const Profile: FC = () => {
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     clearForm();
-    dispatch(setUpdateUserError(''));
+    dispatch(setUpdateUserError(null));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { OrderCardProps } from './type';
 import { TIngredient } from '@utils-types';
 import { OrderCardUI } from '../ui/order-card';
-import { getIngredientsSelector } from '../../services/slices/ingredientsSlice';
+import { getIngredientsSelector } from '@slices/ingredientsSlice';
 import { useSelector } from '../../services/store';
 
 const maxIngredients = 6;

@@ -1,10 +1,7 @@
 import { FC } from 'react';
 import { ProtectedRouteProps } from './type';
 import { useSelector } from '../../services/store';
-import {
-  getAuthChecked,
-  getIsAuthenticated
-} from '../../services/slices/userSlice';
+import { getAuthChecked, getIsAuthenticated } from '@slices/userSlice';
 import { Preloader } from '@ui';
 import { Navigate, useLocation } from 'react-router-dom';
 

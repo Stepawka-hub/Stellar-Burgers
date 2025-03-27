@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { getUserOrders, reducer } from '../profileSlice';
-import { TInitialState } from '../profileSlice';
+import { reducer } from '../profileSlice';
 import { TOrder } from '@utils-types';
+import { TProfileState } from '../types/types';
+import { getUserOrders } from 'src/services/thunks/profile';
 
 describe('Работа редьюсера profile', () => {
-  const initialState: TInitialState = {
+  const initialState: TProfileState = {
     orders: [],
     isFetchingOrders: false
   };

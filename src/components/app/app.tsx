@@ -25,8 +25,9 @@ import { useEffect } from 'react';
 import { useDispatch } from '../../services/store';
 import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
-import { getInitialized, initializeApp } from '../../services/slices/appSlice';
 import { ProtectedRoute } from '../protected-route';
+import { getInitialized } from '@slices/appSlice';
+import { initializeApp } from '@thunks/app';
 
 /* 
   Через useEffect делаем первоначальную инициализацию приложения

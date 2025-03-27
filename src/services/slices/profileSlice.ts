@@ -1,13 +1,9 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getOrdersApi } from '@api';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
+import { TProfileState } from './types/types';
+import { getUserOrders } from '@thunks/profile';
 
-export type TInitialState = {
-  orders: TOrder[];
-  isFetchingOrders: boolean;
-};
-
-export const initialState: TInitialState = {
+export const initialState: TProfileState = {
   orders: [],
   isFetchingOrders: false
 };
@@ -37,11 +33,6 @@ const profileSlice = createSlice({
       });
   }
 });
-
-export const getUserOrders = createAsyncThunk(
-  'profile/getUserOrders',
-  async () => await getOrdersApi()
-);
 
 export const reducer = profileSlice.reducer;
 export const { getUserOrdersSelector, getIsFetchingOrders } =

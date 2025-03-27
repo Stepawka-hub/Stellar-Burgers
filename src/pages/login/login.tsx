@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from '../../services/store';
 import {
   getLoginUserError,
   getLoginUserRequest,
-  loginUser,
   setLoginUserError
-} from '../../services/slices/userSlice';
+} from '@slices/userSlice';
+import { loginUser } from '@thunks/user';
 
 export const Login: FC = () => {
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ export const Login: FC = () => {
 
   useEffect(
     () => () => {
-      dispatch(setLoginUserError(''));
+      dispatch(setLoginUserError(null));
     },
     []
   );
