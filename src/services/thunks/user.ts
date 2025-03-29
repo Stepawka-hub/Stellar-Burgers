@@ -11,14 +11,22 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 import { deleteCookie, getCookie } from '../../utils/cookie';
 import { setAuthChecked, userLogout } from '@slices/userSlice';
+import {
+  CHECK_USER_AUTH,
+  GET_USER,
+  USER_LOGIN,
+  USER_LOGOUT,
+  USER_REGISTER,
+  USER_UPDATE
+} from './typePrefixes';
 
 export const getUser = createAsyncThunk<TUser, void>(
-  'user/getUser',
+  GET_USER,
   async () => (await getUserApi()).user
 );
 
 export const checkUserAuth = createAsyncThunk(
-  'user/checkUserAuth',
+  CHECK_USER_AUTH,
   async (_, { dispatch }) => {
     if (getCookie('accessToken')) {
       dispatch(getUser()).finally(() => {
@@ -31,22 +39,22 @@ export const checkUserAuth = createAsyncThunk(
 );
 
 export const registerUser = createAsyncThunk(
-  'user/register',
+  USER_REGISTER,
   async (data: TRegisterData) => await registerUserApi(data)
 );
 
 export const loginUser = createAsyncThunk(
-  'user/login',
+  USER_LOGIN,
   async (data: TLoginData) => await loginUserApi(data)
 );
 
 export const updateUser = createAsyncThunk(
-  'profile/updateUser',
+  USER_UPDATE,
   async (user: Partial<TRegisterData>) => await updateUserApi(user)
 );
 
 export const logoutUser = createAsyncThunk(
-  'user/logout',
+  USER_LOGOUT,
   async (_, { dispatch }) =>
     logoutApi().then(() => {
       localStorage.removeItem('refreshToken');

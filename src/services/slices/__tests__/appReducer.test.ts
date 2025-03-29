@@ -1,50 +1,47 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { TAppState } from '@slices/types/types';
 import { reducer } from '@slices/appSlice';
 import { initializeApp } from '@thunks/app';
+import {
+  getFulfilledRequestId,
+  getPendingRequestId,
+  getRejectedRequestId
+} from './utils/helpers';
+import { INITIALIZE_APP } from '@thunks/typePrefixes';
 
 describe('Работа редьюсера app', () => {
   const initialState: TAppState = {
     initialized: false
   };
 
-  describe('Тесты асинхронных экшенов', () => {
-    const testRequestId = 'test-app-request-id';
-
+  describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
     it('Инициализация проекта - Начало запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+      const requestId = getPendingRequestId(INITIALIZE_APP);
+      const newState = reducer(initialState, initializeApp.pending(requestId));
 
-      store.dispatch(initializeApp.pending(testRequestId));
-
-      const { initialized } = store.getState();
+      const { initialized } = newState;
       expect(initialized).toBe(false);
     });
 
     it('Получение ленты заказов - Успешное выполнение запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+      const requestId = getFulfilledRequestId(INITIALIZE_APP);
+      const newState = reducer(
+        initialState,
+        initializeApp.fulfilled(undefined, requestId)
+      );
 
-      store.dispatch(initializeApp.fulfilled(undefined, testRequestId));
-
-      const { initialized } = store.getState();
+      const { initialized } = newState;
       expect(initialized).toBe(true);
     });
 
     it('Получение ленты заказов - Возникновение ошибки', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
-      const mockError = new Error('Error when getting feeds');
+      const requestId = getRejectedRequestId(INITIALIZE_APP);
+      const mockError = new Error('Error when initialize app');
+      const newState = reducer(
+        initialState,
+        initializeApp.rejected(mockError, requestId)
+      );
 
-      store.dispatch(initializeApp.rejected(mockError, testRequestId));
-
-      const { initialized } = store.getState();
+      const { initialized } = newState;
       expect(initialized).toBe(false);
     });
   });

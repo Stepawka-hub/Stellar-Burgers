@@ -1,9 +1,19 @@
-import { TFeedsResponse } from '@api';
-import { configureStore } from '@reduxjs/toolkit';
+import { TFeedsResponse, TOrderResponse } from '@api';
 import { TOrder } from '@utils-types';
 import { reducer, setPreviewOrder } from '../feedSlice';
 import { TFeedsState } from '../types/types';
-import { getFeeds } from 'src/services/thunks/feed';
+import { getFeeds, getOrderByNumber } from 'src/services/thunks/feed';
+import {
+  getFulfilledRequestId,
+  getPendingRequestId,
+  getRejectedRequestId
+} from './utils/helpers';
+
+import mockOrdersData from './__mocks__/orders.json';
+import mockFeedsResponseData from './__mocks__/feeds-response.json';
+import { GET_FEEDS_INFO, GET_ORDER_BY_NUMBER } from '@thunks/typePrefixes';
+
+const mockOrders: TOrder[] = mockOrdersData.data;
 
 describe('Работа редьюсера feed', () => {
   const initialState: TFeedsState = {
@@ -18,15 +28,7 @@ describe('Работа редьюсера feed', () => {
 
   describe('Тесты синхронных экшенов', () => {
     it('Смена превью заказа', () => {
-      const mockPreviewOrder: TOrder = {
-        ingredients: ['643d69a5c3f7b9001cfa093c', '643d69a5c3f7b9001cfa0941'],
-        _id: '67e063956fce7d001db5bd6c',
-        status: 'done',
-        name: 'Краторный био-марсианский бургер',
-        createdAt: '2025-03-23T19:40:05.812Z',
-        updatedAt: '2025-03-23T19:40:06.493Z',
-        number: 71974
-      };
+      const mockPreviewOrder: TOrder = mockOrders[0];
       const newState = reducer(initialState, setPreviewOrder(mockPreviewOrder));
 
       const { previewOrder } = newState;
@@ -35,62 +37,24 @@ describe('Работа редьюсера feed', () => {
     });
   });
 
-  describe('Тесты асинхронных экшенов', () => {
-    const testRequestId = 'test-feed-request-id';
-
+  describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
     it('Получение ленты заказов - Начало запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+      const requestId = getPendingRequestId(GET_FEEDS_INFO);
+      const newState = reducer(initialState, getFeeds.pending(requestId));
 
-      store.dispatch(getFeeds.pending(testRequestId));
-
-      const { isFetchingFeeds } = store.getState();
+      const { isFetchingFeeds } = newState;
       expect(isFetchingFeeds).toBe(true);
     });
 
     it('Получение ленты заказов - Успешное выполнение запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+      const requestId = getFulfilledRequestId(GET_FEEDS_INFO);
+      const mockOrdersResponse: TFeedsResponse = mockFeedsResponseData;
+      const newState = reducer(
+        initialState,
+        getFeeds.fulfilled(mockOrdersResponse, requestId)
+      );
 
-      const mockOrdersResponse: TFeedsResponse = {
-        success: true,
-        orders: [
-          {
-            ingredients: [
-              '643d69a5c3f7b9001cfa093c',
-              '643d69a5c3f7b9001cfa0941'
-            ],
-            _id: '67e063956fce7d001db5bd6c',
-            status: 'done',
-            name: 'Краторный био-марсианский бургер',
-            createdAt: '2025-03-23T19:40:05.812Z',
-            updatedAt: '2025-03-23T19:40:06.493Z',
-            number: 71974
-          },
-          {
-            ingredients: [
-              '643d69a5c3f7b9001cfa093c',
-              '643d69a5c3f7b9001cfa0941'
-            ],
-            _id: '67e063956fce7d001db5bd6c',
-            status: 'done',
-            name: 'Краторный био-марсианский бургер',
-            createdAt: '2025-03-23T19:40:05.812Z',
-            updatedAt: '2025-03-23T19:40:06.493Z',
-            number: 71974
-          }
-        ],
-        total: 2,
-        totalToday: 2
-      };
-
-      store.dispatch(getFeeds.fulfilled(mockOrdersResponse, testRequestId));
-
-      const { feed, isFetchingFeeds } = store.getState();
+      const { feed, isFetchingFeeds } = newState;
       const { orders, total, totalToday } = feed;
 
       expect(isFetchingFeeds).toBe(false);
@@ -100,16 +64,36 @@ describe('Работа редьюсера feed', () => {
     });
 
     it('Получение ленты заказов - Возникновение ошибки', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+      const requestId = getRejectedRequestId(GET_FEEDS_INFO);
       const mockError = new Error('Error when getting feeds');
+      const newState = reducer(
+        initialState,
+        getFeeds.rejected(mockError, requestId)
+      );
 
-      store.dispatch(getFeeds.rejected(mockError, testRequestId));
-
-      const { isFetchingFeeds } = store.getState();
+      const { isFetchingFeeds } = newState;
       expect(isFetchingFeeds).toBe(false);
+    });
+
+    it('Получение заказа по номеру - Успешное выполнение запроса', () => {
+      const requestId = getFulfilledRequestId(GET_ORDER_BY_NUMBER);
+      const mockOrderResponse: TOrderResponse = {
+        success: true,
+        orders: mockOrders
+      };
+
+      const newState = reducer(
+        initialState,
+        getOrderByNumber.fulfilled(
+          mockOrderResponse,
+          requestId,
+          mockOrderResponse.orders[0].number
+        )
+      );
+
+      const { previewOrder } = newState;
+
+      expect(previewOrder).toEqual(mockOrderResponse.orders[0]);
     });
   });
 });

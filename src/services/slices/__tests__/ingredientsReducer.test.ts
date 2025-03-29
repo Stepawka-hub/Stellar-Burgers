@@ -1,8 +1,15 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { reducer, setPreviewIngredientId } from '../ingredientsSlice';
 import { TIngredient } from '@utils-types';
 import { TIngredientsState } from '../types/types';
 import { getIngredients } from '@thunks/ingredients';
+import {
+  getFulfilledRequestId,
+  getPendingRequestId,
+  getRejectedRequestId
+} from './utils/helpers';
+
+import mockIngredientsData from './__mocks__/ingredients.json';
+import { GET_ALL_INGREDIENTS } from '@thunks/typePrefixes';
 
 describe('Работа редьюсера ingredients', () => {
   const initialState: TIngredientsState = {
@@ -27,81 +34,42 @@ describe('Работа редьюсера ingredients', () => {
   });
 
   describe('Тесты асинхронных экшенов', () => {
-    const testRequestId = 'test-ingredients-request-id';
+    const mockIngredients: TIngredient[] = mockIngredientsData.data;
 
-    it('Получение ингредиента - Начало запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+    it('Получение ингредиентов - Начало запроса', () => {
+      const requestId = getPendingRequestId(GET_ALL_INGREDIENTS);
+      const newState = reducer(initialState, getIngredients.pending(requestId));
 
-      store.dispatch(getIngredients.pending(testRequestId));
-
-      const { isIngredientsLoading, getIngredientsError } = store.getState();
+      const { isIngredientsLoading, getIngredientsError } = newState;
 
       expect(isIngredientsLoading).toBe(true);
       expect(getIngredientsError).toBe(null);
     });
 
-    it('Получение ингредиента - Успешное выполнение запроса', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
-
-      const mockIngredientResponse: TIngredient[] = [
-        {
-          _id: '643d69a5c3f7b9001cfa093c',
-          name: 'Краторная булка N-200i',
-          type: 'bun',
-          proteins: 80,
-          fat: 24,
-          carbohydrates: 53,
-          calories: 420,
-          price: 1255,
-          image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-          image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png'
-        },
-        {
-          _id: '643d69a5c3f7b9001cfa0941',
-          name: 'Биокотлета из марсианской Магнолии',
-          type: 'main',
-          proteins: 420,
-          fat: 142,
-          carbohydrates: 242,
-          calories: 4242,
-          price: 424,
-          image: 'https://code.s3.yandex.net/react/code/meat-01.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
-          image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png'
-        }
-      ];
-
-      store.dispatch(
-        getIngredients.fulfilled(mockIngredientResponse, testRequestId)
+    it('Получение ингредиентов - Успешное выполнение запроса', () => {
+      const requestId = getFulfilledRequestId(GET_ALL_INGREDIENTS);
+      const newState = reducer(
+        initialState,
+        getIngredients.fulfilled(mockIngredients, requestId)
       );
 
       const { ingredients, isIngredientsLoading, getIngredientsError } =
-        store.getState();
+        newState;
 
-      expect(ingredients).toEqual(mockIngredientResponse);
+      expect(ingredients).toEqual(mockIngredients);
       expect(isIngredientsLoading).toBe(false);
       expect(getIngredientsError).toBe(null);
     });
 
-    it('Получение ингредиента - Возникновение ошибки', () => {
-      const store = configureStore({
-        reducer,
-        preloadedState: initialState
-      });
+    it('Получение ингредиентов - Возникновение ошибки', () => {
+      const requestId = getRejectedRequestId(GET_ALL_INGREDIENTS);
       const mockError = new Error('Error when getting ingredients');
+      const newState = reducer(
+        initialState,
+        getIngredients.rejected(mockError, requestId)
+      );
 
-      store.dispatch(getIngredients.rejected(mockError, testRequestId));
-
-      const { isIngredientsLoading, getIngredientsError } = store.getState();
+      const { isIngredientsLoading, getIngredientsError } = newState;
       expect(isIngredientsLoading).toBe(false);
       expect(getIngredientsError).toBe(mockError.message);
     });

@@ -1,9 +1,8 @@
 import { getOrdersApi } from '@api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-
-const thunkName = 'profile/getUserOrders';
+import { GET_PROFILE_ORDERS } from './typePrefixes';
 
 export const getUserOrders = createAsyncThunk(
-  thunkName,
+  GET_PROFILE_ORDERS,
   async () => await getOrdersApi()
 );
