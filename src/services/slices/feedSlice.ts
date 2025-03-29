@@ -1,4 +1,3 @@
-import { TOrderResponse } from '@api';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder, TOrdersData } from '@utils-types';
 import { getFeeds, getOrderByNumber } from '@thunks/feed';
@@ -45,8 +44,8 @@ const feedSlice = createSlice({
       })
       .addCase(
         getOrderByNumber.fulfilled,
-        (state, { payload }: PayloadAction<TOrderResponse>) => {
-          state.previewOrder = payload.orders[0];
+        (state, { payload }: PayloadAction<TOrder>) => {
+          state.previewOrder = payload;
         }
       );
   }

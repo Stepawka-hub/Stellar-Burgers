@@ -5,23 +5,25 @@ import {
   reducer,
   removeIngredient
 } from '../burgerConstructorSlice';
-import { TConstructorIngredient, TIngredient } from '@utils-types';
-import { TNewOrderResponse } from '@api';
+import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 import { TBurgerConstructorState } from '../types/types';
-import { orderBurger } from 'src/services/thunks/burgerConstructor';
+import {
+  ORDER_BURGER,
+  orderBurger
+} from 'src/services/thunks/burgerConstructor';
 
 import mockIngredientsData from './__mocks__/ingredients.json';
 import mockBunsData from './__mocks__/buns.json';
-import mockOrderResponseData from './__mocks__/order-response.json';
-import { ORDER_BURGER } from '@thunks/typePrefixes';
+import mockOrdersData from './__mocks__/orders.json';
 import {
   getFulfilledRequestId,
   getPendingRequestId,
   getRejectedRequestId
-} from './utils/helpers';
+} from './helpers/helpers';
 
 const mockIngredients: TIngredient[] = mockIngredientsData.data;
 const mockBuns: TIngredient[] = mockBunsData.data;
+const mockOrders: TOrder[] = mockOrdersData.data;
 
 describe('Работа редьюсера конструктора', () => {
   describe('Тесты синхронных экшенов', () => {
@@ -107,46 +109,48 @@ describe('Работа редьюсера конструктора', () => {
       orderModalData: null
     };
 
-    it('Заказ бургера - Начало запроса', () => {
-      const requestId = getPendingRequestId(ORDER_BURGER);
-      const newState = reducer(
-        initialState,
-        orderBurger.pending(requestId, [])
-      );
+    describe('Заказ бургера', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(ORDER_BURGER);
+        const newState = reducer(
+          initialState,
+          orderBurger.pending(requestId, [])
+        );
 
-      const { orderRequest, orderError } = newState;
+        const { orderRequest, orderError } = newState;
 
-      expect(orderRequest).toBe(true);
-      expect(orderError).toBe(null);
-    });
+        expect(orderRequest).toBe(true);
+        expect(orderError).toBe(null);
+      });
 
-    it('Заказ бургера - Успешное выполнение запроса', () => {
-      const requestId = getFulfilledRequestId(ORDER_BURGER);
-      const mockOrderResponse: TNewOrderResponse = mockOrderResponseData;
-      const newState = reducer(
-        initialState,
-        orderBurger.fulfilled(mockOrderResponse, requestId, [])
-      );
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(ORDER_BURGER);
+        const mockOrder: TOrder = mockOrders[0];
+        const newState = reducer(
+          initialState,
+          orderBurger.fulfilled(mockOrder, requestId, [])
+        );
 
-      const { orderModalData, orderRequest, orderError } = newState;
+        const { orderModalData, orderRequest, orderError } = newState;
 
-      expect(orderModalData).toEqual(mockOrderResponse.order);
-      expect(orderRequest).toBe(false);
-      expect(orderError).toBe(null);
-    });
+        expect(orderModalData).toEqual(mockOrder);
+        expect(orderRequest).toBe(false);
+        expect(orderError).toBe(null);
+      });
 
-    it('Заказ бургера - Возникновение ошибки', () => {
-      const requestId = getRejectedRequestId(ORDER_BURGER);
-      const mockError = new Error('Error when creating an order');
-      const newState = reducer(
-        initialState,
-        orderBurger.rejected(mockError, requestId, [])
-      );
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(ORDER_BURGER);
+        const mockError = new Error('Error when creating an order');
+        const newState = reducer(
+          initialState,
+          orderBurger.rejected(mockError, requestId, [])
+        );
 
-      const { orderRequest, orderError } = newState;
+        const { orderRequest, orderError } = newState;
 
-      expect(orderRequest).toBe(false);
-      expect(orderError).toBe(mockError.message);
+        expect(orderRequest).toBe(false);
+        expect(orderError).toBe(mockError.message);
+      });
     });
   });
 });

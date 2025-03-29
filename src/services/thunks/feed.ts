@@ -1,10 +1,15 @@
 import { getFeedsApi, getOrderByNumberApi } from '@api';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { GET_FEEDS_INFO, GET_ORDER_BY_NUMBER } from './typePrefixes';
+
+export const GET_ORDER_BY_NUMBER = 'feed/getOrderByNumber';
+export const GET_FEEDS_INFO = 'feed/getFeedsInfo';
 
 export const getOrderByNumber = createAsyncThunk(
   GET_ORDER_BY_NUMBER,
-  async (number: number) => await getOrderByNumberApi(number)
+  async (number: number) => {
+    const { orders } = await getOrderByNumberApi(number);
+    return orders[0];
+  }
 );
 
 export const getFeeds = createAsyncThunk(

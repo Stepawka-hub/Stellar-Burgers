@@ -1,115 +1,293 @@
 import { TUserState } from '../types/types';
-import { reducer, userLogout } from '../userSlice';
+import {
+  initialState as state,
+  reducer,
+  setLoginUserError,
+  setRegisterUserError,
+  setUpdateUserError
+} from '../userSlice';
+import {
+  getFulfilledRequestId,
+  getPendingRequestId,
+  getRejectedRequestId
+} from './helpers/helpers';
+import {
+  GET_USER,
+  getUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  updateUser,
+  USER_LOGIN,
+  USER_LOGOUT,
+  USER_REGISTER,
+  USER_UPDATE
+} from '@thunks/user';
+import { TUserResponse } from '@api';
+
+import mockUser from './__mocks__/user.json';
+import { TUser } from '@utils-types';
 
 describe('Работа редьюсера user', () => {
-  const initialState: TUserState = {
-    isAuthChecked: false,
-    isAuthenticated: false,
-    user: null,
-
-    loginUserRequest: false,
-    registerUserRequest: false,
-    logoutUserRequest: false,
-    updateUserRequest: false,
-
-    loginUserError: null,
-    registerUserError: null,
-    logoutUserError: null,
-    updateUserError: null
-  };
-
   describe('Тесты синхронных экшенов', () => {
     const initialState: TUserState = {
+      ...state,
       isAuthChecked: true,
       isAuthenticated: true,
-      user: {
-        email: 'test@mail.ru',
-        name: 'Test Name'
-      },
-
-      loginUserRequest: false,
-      registerUserRequest: false,
-      logoutUserRequest: false,
-      updateUserRequest: false,
-
-      loginUserError: null,
-      registerUserError: null,
-      logoutUserError: null,
-      updateUserError: null
+      user: mockUser.user
     };
 
-    it('Логаут пользователя', () => {
-      const newState = reducer(initialState, userLogout());
+    it('Изменение ошибки при логине', () => {
+      const errorText = 'Login error';
+      const newState = reducer(initialState, setLoginUserError(errorText));
+      const { loginUserError } = newState;
 
-      const { user, isAuthenticated } = newState;
-      expect(user).toBe(null);
-      expect(isAuthenticated).toBe(false);
+      expect(loginUserError).toBe(errorText);
+    });
+
+    it('Изменение ошибки при регистрации', () => {
+      const errorText = 'Register error';
+      const newState = reducer(initialState, setRegisterUserError(errorText));
+      const { registerUserError } = newState;
+
+      expect(registerUserError).toBe(errorText);
+    });
+
+    it('Изменение ошибки при обновлении данных пользователя', () => {
+      const errorText = 'User update error';
+      const newState = reducer(initialState, setUpdateUserError(errorText));
+      const { updateUserError } = newState;
+
+      expect(updateUserError).toBe(errorText);
     });
   });
 
-  // describe('Тесты асинхронных экшенов', () => {
-  //   const testRequestId = 'test-profile-orders-request-id';
+  describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
+    const initialState: TUserState = { ...state };
 
-  //   it('Получение ленты заказов - Начало запроса', () => {
-  //     const store = configureStore({
-  //       reducer,
-  //       preloadedState: initialState
-  //     });
+    describe('Обновление данных пользователя', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(USER_UPDATE);
+        const newState = reducer(
+          initialState,
+          updateUser.pending(requestId, {})
+        );
 
-  //     store.dispatch(getUserOrders.pending(testRequestId));
+        const { updateUserRequest, updateUserError } = newState;
+        expect(updateUserRequest).toBe(true);
+        expect(updateUserError).toBe(null);
+      });
 
-  //     const { isFetchingOrders } = store.getState();
-  //     expect(isFetchingOrders).toBe(true);
-  //   });
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(USER_UPDATE);
+        const mockUserResponse: TUser = mockUser.updateResponse;
+        const newState = reducer(
+          initialState,
+          updateUser.fulfilled(mockUserResponse, requestId, {})
+        );
 
-  //   it('Получение ленты заказов - Успешное выполнение запроса', () => {
-  //     const store = configureStore({
-  //       reducer,
-  //       preloadedState: initialState
-  //     });
+        const { user, updateUserError, updateUserRequest } = newState;
 
-  //     const mockOrdersResponse: TOrder[] = [
-  //       {
-  //         ingredients: ['643d69a5c3f7b9001cfa093c', '643d69a5c3f7b9001cfa0941'],
-  //         _id: '67e063956fce7d001db5bd6c',
-  //         status: 'done',
-  //         name: 'Краторный био-марсианский бургер',
-  //         createdAt: '2025-03-23T19:40:05.812Z',
-  //         updatedAt: '2025-03-23T19:40:06.493Z',
-  //         number: 71974
-  //       },
-  //       {
-  //         ingredients: ['643d69a5c3f7b9001cfa093c', '643d69a5c3f7b9001cfa0941'],
-  //         _id: '67e063956fce7d001db5bd6c',
-  //         status: 'done',
-  //         name: 'Краторный био-марсианский бургер',
-  //         createdAt: '2025-03-23T19:40:05.812Z',
-  //         updatedAt: '2025-03-23T19:40:06.493Z',
-  //         number: 71974
-  //       }
-  //     ];
+        expect(updateUserRequest).toBe(false);
+        expect(updateUserError).toBe(null);
+        expect(user).toEqual(mockUserResponse);
+      });
 
-  //     store.dispatch(
-  //       getUserOrders.fulfilled(mockOrdersResponse, testRequestId)
-  //     );
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(USER_UPDATE);
+        const mockError = new Error('Error when updating user');
+        const newState = reducer(
+          initialState,
+          updateUser.rejected(mockError, requestId, {})
+        );
 
-  //     const { orders, isFetchingOrders } = store.getState();
+        const { user, updateUserError, updateUserRequest } = newState;
+        expect(updateUserRequest).toBe(false);
+        expect(updateUserError).toBe(mockError.message);
+        expect(user).toBe(null);
+      });
+    });
 
-  //     expect(isFetchingOrders).toBe(false);
-  //     expect(orders).toEqual(mockOrdersResponse);
-  //   });
+    describe('Регистрация пользователя', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(USER_REGISTER);
+        const newState = reducer(
+          initialState,
+          registerUser.pending(requestId, mockUser.registerData)
+        );
 
-  //   it('Получение ленты заказов - Возникновение ошибки', () => {
-  //     const store = configureStore({
-  //       reducer,
-  //       preloadedState: initialState
-  //     });
-  //     const mockError = new Error('Error when getting profile orders');
+        const { user, registerUserRequest, registerUserError } = newState;
+        expect(registerUserRequest).toBe(true);
+        expect(registerUserError).toBe(null);
+        expect(user).toBe(null);
+      });
 
-  //     store.dispatch(getUserOrders.rejected(mockError, testRequestId));
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(USER_REGISTER);
+        const registerUserResponse: TUser = mockUser.registerResponse;
+        const newState = reducer(
+          initialState,
+          registerUser.fulfilled(
+            registerUserResponse,
+            requestId,
+            mockUser.registerData
+          )
+        );
 
-  //     const { isFetchingOrders } = store.getState();
-  //     expect(isFetchingOrders).toBe(false);
-  //   });
-  // });
+        const { user, registerUserError, registerUserRequest } = newState;
+
+        expect(registerUserRequest).toBe(false);
+        expect(registerUserError).toBe(null);
+        expect(user).toEqual(registerUserResponse);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(USER_REGISTER);
+        const mockError = new Error('Error when register user');
+        const newState = reducer(
+          initialState,
+          registerUser.rejected(mockError, requestId, mockUser.registerData)
+        );
+
+        const { user, registerUserError, registerUserRequest } = newState;
+        expect(registerUserRequest).toBe(false);
+        expect(registerUserError).toBe(mockError.message);
+        expect(user).toBe(null);
+      });
+    });
+
+    describe('Логин пользователя', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(USER_LOGIN);
+        const newState = reducer(
+          initialState,
+          loginUser.pending(requestId, mockUser.loginData)
+        );
+
+        const { user, loginUserRequest, loginUserError } = newState;
+        expect(loginUserRequest).toBe(true);
+        expect(loginUserError).toBe(null);
+        expect(user).toBe(null);
+      });
+
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(USER_LOGIN);
+        const loginUserResponse: TUser = mockUser.loginResponse;
+        const newState = reducer(
+          initialState,
+          loginUser.fulfilled(loginUserResponse, requestId, mockUser.loginData)
+        );
+
+        const { user, loginUserError, loginUserRequest } = newState;
+
+        expect(loginUserRequest).toBe(false);
+        expect(loginUserError).toBe(null);
+        expect(user).toEqual(loginUserResponse);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(USER_LOGIN);
+        const mockError = new Error('Error when login user');
+        const newState = reducer(
+          initialState,
+          loginUser.rejected(mockError, requestId, mockUser.loginData)
+        );
+
+        const { user, loginUserError, loginUserRequest } = newState;
+        expect(loginUserRequest).toBe(false);
+        expect(loginUserError).toBe(mockError.message);
+        expect(user).toBe(null);
+      });
+    });
+
+    describe('Получение пользователя', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(GET_USER);
+        const newState = reducer(initialState, getUser.pending(requestId));
+
+        const { user, isAuthenticated, isAuthChecked } = newState;
+
+        expect(isAuthenticated).toBe(false);
+        expect(isAuthChecked).toBe(false);
+        expect(user).toBe(null);
+      });
+
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(GET_USER);
+        const getUserResponse: TUser = mockUser.user;
+        const newState = reducer(
+          initialState,
+          getUser.fulfilled(getUserResponse, requestId)
+        );
+
+        const { user, isAuthenticated, isAuthChecked } = newState;
+
+        expect(isAuthenticated).toBe(true);
+        expect(isAuthChecked).toBe(true);
+        expect(user).toEqual(getUserResponse);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(GET_USER);
+        const mockError = new Error('Error when get user');
+        const newState = reducer(
+          initialState,
+          getUser.rejected(mockError, requestId)
+        );
+
+        const { user, isAuthenticated, isAuthChecked } = newState;
+
+        expect(isAuthenticated).toBe(false);
+        expect(isAuthChecked).toBe(true);
+        expect(user).toEqual(null);
+      });
+    });
+
+    describe('Логаут пользователя', () => {
+      const initialState: TUserState = {
+        ...state,
+        isAuthChecked: true,
+        isAuthenticated: true,
+        user: mockUser.user
+      };
+
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(USER_LOGOUT);
+        const newState = reducer(initialState, logoutUser.pending(requestId));
+
+        const { user, logoutUserRequest, logoutUserError } = newState;
+        expect(logoutUserRequest).toBe(true);
+        expect(logoutUserError).toBe(null);
+        expect(user).toEqual(initialState.user);
+      });
+
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(USER_LOGOUT);
+        const newState = reducer(
+          initialState,
+          logoutUser.fulfilled(undefined, requestId)
+        );
+
+        const { user, logoutUserError, logoutUserRequest } = newState;
+
+        expect(logoutUserRequest).toBe(false);
+        expect(logoutUserError).toBe(null);
+        expect(user).toBe(null);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(USER_LOGOUT);
+        const mockError = new Error('Error when logout user');
+        const newState = reducer(
+          initialState,
+          logoutUser.rejected(mockError, requestId)
+        );
+
+        const { user, logoutUserError, logoutUserRequest } = newState;
+        expect(logoutUserRequest).toBe(false);
+        expect(logoutUserError).toBe(mockError.message);
+        expect(user).toEqual(initialState.user);
+      });
+    });
+  });
 });

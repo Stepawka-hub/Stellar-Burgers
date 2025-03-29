@@ -1,6 +1,4 @@
-import { TAuthResponse } from '@api';
-import { setCookie } from '../../utils/cookie';
-import { TError } from '@utils-types';
+import { TError, TUser } from '@utils-types';
 import { TUserState } from '@slices/types/types';
 
 export enum UserAction {
@@ -12,7 +10,7 @@ export enum UserAction {
 
 export const handlePending = (state: TUserState, actionType: UserAction) => {
   state[`${actionType}Request`] = true;
-  state[`${actionType}Error`] = '';
+  state[`${actionType}Error`] = null;
 };
 
 export const handleRejected = (
@@ -28,13 +26,8 @@ export const handleFulfilled = (state: TUserState, actionType: UserAction) => {
   state[`${actionType}Request`] = false;
 };
 
-export const handleSuccessLogin = (
-  state: TUserState,
-  payload: TAuthResponse
-) => {
-  state.user = payload.user;
+export const handleSuccessLogin = (state: TUserState, payload: TUser) => {
+  state.user = payload;
   state.isAuthenticated = true;
   state.isAuthChecked = true;
-  localStorage.setItem('refreshToken', payload.refreshToken);
-  setCookie('accessToken', payload.accessToken);
 };

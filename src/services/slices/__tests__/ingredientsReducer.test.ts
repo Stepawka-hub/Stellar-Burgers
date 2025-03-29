@@ -6,10 +6,10 @@ import {
   getFulfilledRequestId,
   getPendingRequestId,
   getRejectedRequestId
-} from './utils/helpers';
+} from './helpers/helpers';
 
 import mockIngredientsData from './__mocks__/ingredients.json';
-import { GET_ALL_INGREDIENTS } from '@thunks/typePrefixes';
+import { GET_ALL_INGREDIENTS } from '@thunks/ingredients';
 
 describe('Работа редьюсера ingredients', () => {
   const initialState: TIngredientsState = {
@@ -33,45 +33,50 @@ describe('Работа редьюсера ingredients', () => {
     });
   });
 
-  describe('Тесты асинхронных экшенов', () => {
+  describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
     const mockIngredients: TIngredient[] = mockIngredientsData.data;
 
-    it('Получение ингредиентов - Начало запроса', () => {
-      const requestId = getPendingRequestId(GET_ALL_INGREDIENTS);
-      const newState = reducer(initialState, getIngredients.pending(requestId));
+    describe('Получение ингредиентов', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(GET_ALL_INGREDIENTS);
+        const newState = reducer(
+          initialState,
+          getIngredients.pending(requestId)
+        );
 
-      const { isIngredientsLoading, getIngredientsError } = newState;
+        const { isIngredientsLoading, getIngredientsError } = newState;
 
-      expect(isIngredientsLoading).toBe(true);
-      expect(getIngredientsError).toBe(null);
-    });
+        expect(isIngredientsLoading).toBe(true);
+        expect(getIngredientsError).toBe(null);
+      });
 
-    it('Получение ингредиентов - Успешное выполнение запроса', () => {
-      const requestId = getFulfilledRequestId(GET_ALL_INGREDIENTS);
-      const newState = reducer(
-        initialState,
-        getIngredients.fulfilled(mockIngredients, requestId)
-      );
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(GET_ALL_INGREDIENTS);
+        const newState = reducer(
+          initialState,
+          getIngredients.fulfilled(mockIngredients, requestId)
+        );
 
-      const { ingredients, isIngredientsLoading, getIngredientsError } =
-        newState;
+        const { ingredients, isIngredientsLoading, getIngredientsError } =
+          newState;
 
-      expect(ingredients).toEqual(mockIngredients);
-      expect(isIngredientsLoading).toBe(false);
-      expect(getIngredientsError).toBe(null);
-    });
+        expect(ingredients).toEqual(mockIngredients);
+        expect(isIngredientsLoading).toBe(false);
+        expect(getIngredientsError).toBe(null);
+      });
 
-    it('Получение ингредиентов - Возникновение ошибки', () => {
-      const requestId = getRejectedRequestId(GET_ALL_INGREDIENTS);
-      const mockError = new Error('Error when getting ingredients');
-      const newState = reducer(
-        initialState,
-        getIngredients.rejected(mockError, requestId)
-      );
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(GET_ALL_INGREDIENTS);
+        const mockError = new Error('Error when getting ingredients');
+        const newState = reducer(
+          initialState,
+          getIngredients.rejected(mockError, requestId)
+        );
 
-      const { isIngredientsLoading, getIngredientsError } = newState;
-      expect(isIngredientsLoading).toBe(false);
-      expect(getIngredientsError).toBe(mockError.message);
+        const { isIngredientsLoading, getIngredientsError } = newState;
+        expect(isIngredientsLoading).toBe(false);
+        expect(getIngredientsError).toBe(mockError.message);
+      });
     });
   });
 });

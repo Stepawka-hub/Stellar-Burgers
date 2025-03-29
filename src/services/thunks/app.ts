@@ -1,7 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getIngredients } from './ingredients';
 import { checkUserAuth } from './user';
-import { INITIALIZE_APP } from './typePrefixes';
+
+export const INITIALIZE_APP = 'app/initialize';
 
 export const initializeApp = createAsyncThunk(
   INITIALIZE_APP,

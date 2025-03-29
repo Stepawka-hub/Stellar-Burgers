@@ -1,4 +1,3 @@
-import { TNewOrderResponse } from '@api';
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 import { orderBurger } from '@thunks/burgerConstructor';
@@ -86,8 +85,8 @@ const burgerConstructorSlice = createSlice({
       })
       .addCase(
         orderBurger.fulfilled,
-        (state, { payload }: PayloadAction<TNewOrderResponse>) => {
-          state.orderModalData = payload.order;
+        (state, { payload }: PayloadAction<TOrder>) => {
+          state.orderModalData = payload;
           state.orderError = null;
           state.orderRequest = false;
         }

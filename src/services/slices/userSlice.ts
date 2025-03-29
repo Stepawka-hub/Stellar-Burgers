@@ -40,10 +40,6 @@ const userSlice = createSlice({
     setAuthChecked: (state) => {
       state.isAuthChecked = true;
     },
-    userLogout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-    },
     setLoginUserError: (state, { payload }: PayloadAction<TError>) => {
       state.loginUserError = payload;
     },
@@ -71,6 +67,10 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getUser.pending, (state) => {
+        state.isAuthenticated = false;
+        state.isAuthChecked = false;
+      })
       .addCase(getUser.rejected, (state, { error }) => {
         state.isAuthChecked = true;
         console.error(error);
@@ -89,7 +89,7 @@ const userSlice = createSlice({
       )
       .addCase(
         loginUser.fulfilled,
-        (state, { payload }: PayloadAction<TAuthResponse>) => {
+        (state, { payload }: PayloadAction<TUser>) => {
           handleFulfilled(state, UserAction.login);
           handleSuccessLogin(state, payload);
         }
@@ -104,7 +104,7 @@ const userSlice = createSlice({
       )
       .addCase(
         registerUser.fulfilled,
-        (state, { payload }: PayloadAction<TAuthResponse>) => {
+        (state, { payload }: PayloadAction<TUser>) => {
           handleFulfilled(state, UserAction.register);
           handleSuccessLogin(state, payload);
         }
@@ -122,15 +122,20 @@ const userSlice = createSlice({
       })
       .addCase(logoutUser.fulfilled, (state) => {
         handleFulfilled(state, UserAction.logout);
+        state.user = null;
+        state.isAuthenticated = false;
       })
 
       .addCase(updateUser.pending, (state) => {
         handlePending(state, UserAction.update);
       })
-      .addCase(updateUser.fulfilled, (state, { payload }) => {
-        handleFulfilled(state, UserAction.update);
-        state.user = payload.user;
-      })
+      .addCase(
+        updateUser.fulfilled,
+        (state, { payload }: PayloadAction<TUser>) => {
+          handleFulfilled(state, UserAction.update);
+          state.user = payload;
+        }
+      )
       .addCase(updateUser.rejected, (state, { error }) => {
         handleRejected(state, UserAction.update, error.message);
       });
@@ -142,7 +147,6 @@ export const {
   setAuthChecked,
   setLoginUserError,
   setRegisterUserError,
-  userLogout,
   setUpdateUserError
 } = userSlice.actions;
 export const {

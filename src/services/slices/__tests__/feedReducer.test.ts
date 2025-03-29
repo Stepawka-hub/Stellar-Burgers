@@ -7,11 +7,11 @@ import {
   getFulfilledRequestId,
   getPendingRequestId,
   getRejectedRequestId
-} from './utils/helpers';
+} from './helpers/helpers';
 
 import mockOrdersData from './__mocks__/orders.json';
 import mockFeedsResponseData from './__mocks__/feeds-response.json';
-import { GET_FEEDS_INFO, GET_ORDER_BY_NUMBER } from '@thunks/typePrefixes';
+import { GET_FEEDS_INFO, GET_ORDER_BY_NUMBER } from '@thunks/feed';
 
 const mockOrders: TOrder[] = mockOrdersData.data;
 
@@ -38,62 +38,63 @@ describe('Работа редьюсера feed', () => {
   });
 
   describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
-    it('Получение ленты заказов - Начало запроса', () => {
-      const requestId = getPendingRequestId(GET_FEEDS_INFO);
-      const newState = reducer(initialState, getFeeds.pending(requestId));
+    describe('Получение ленты заказов', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(GET_FEEDS_INFO);
+        const newState = reducer(initialState, getFeeds.pending(requestId));
 
-      const { isFetchingFeeds } = newState;
-      expect(isFetchingFeeds).toBe(true);
+        const { isFetchingFeeds } = newState;
+        expect(isFetchingFeeds).toBe(true);
+      });
+
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(GET_FEEDS_INFO);
+        const mockOrdersResponse: TFeedsResponse = mockFeedsResponseData;
+        const newState = reducer(
+          initialState,
+          getFeeds.fulfilled(mockOrdersResponse, requestId)
+        );
+
+        const { feed, isFetchingFeeds } = newState;
+        const { orders, total, totalToday } = feed;
+
+        expect(isFetchingFeeds).toBe(false);
+        expect(orders).toEqual(mockOrdersResponse.orders);
+        expect(total).toBe(mockOrdersResponse.total);
+        expect(totalToday).toBe(mockOrdersResponse.totalToday);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(GET_FEEDS_INFO);
+        const mockError = new Error('Error when getting feeds');
+        const newState = reducer(
+          initialState,
+          getFeeds.rejected(mockError, requestId)
+        );
+
+        const { isFetchingFeeds } = newState;
+        expect(isFetchingFeeds).toBe(false);
+      });
     });
 
-    it('Получение ленты заказов - Успешное выполнение запроса', () => {
-      const requestId = getFulfilledRequestId(GET_FEEDS_INFO);
-      const mockOrdersResponse: TFeedsResponse = mockFeedsResponseData;
-      const newState = reducer(
-        initialState,
-        getFeeds.fulfilled(mockOrdersResponse, requestId)
-      );
+    describe('Получение заказа по номеру', () => {
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(GET_ORDER_BY_NUMBER);
+        const mockOrderResponse = mockOrders;
 
-      const { feed, isFetchingFeeds } = newState;
-      const { orders, total, totalToday } = feed;
+        const newState = reducer(
+          initialState,
+          getOrderByNumber.fulfilled(
+            mockOrders[0],
+            requestId,
+            mockOrderResponse[0].number
+          )
+        );
 
-      expect(isFetchingFeeds).toBe(false);
-      expect(orders).toEqual(mockOrdersResponse.orders);
-      expect(total).toBe(mockOrdersResponse.total);
-      expect(totalToday).toBe(mockOrdersResponse.totalToday);
-    });
+        const { previewOrder } = newState;
 
-    it('Получение ленты заказов - Возникновение ошибки', () => {
-      const requestId = getRejectedRequestId(GET_FEEDS_INFO);
-      const mockError = new Error('Error when getting feeds');
-      const newState = reducer(
-        initialState,
-        getFeeds.rejected(mockError, requestId)
-      );
-
-      const { isFetchingFeeds } = newState;
-      expect(isFetchingFeeds).toBe(false);
-    });
-
-    it('Получение заказа по номеру - Успешное выполнение запроса', () => {
-      const requestId = getFulfilledRequestId(GET_ORDER_BY_NUMBER);
-      const mockOrderResponse: TOrderResponse = {
-        success: true,
-        orders: mockOrders
-      };
-
-      const newState = reducer(
-        initialState,
-        getOrderByNumber.fulfilled(
-          mockOrderResponse,
-          requestId,
-          mockOrderResponse.orders[0].number
-        )
-      );
-
-      const { previewOrder } = newState;
-
-      expect(previewOrder).toEqual(mockOrderResponse.orders[0]);
+        expect(previewOrder).toEqual(mockOrderResponse[0]);
+      });
     });
   });
 });
