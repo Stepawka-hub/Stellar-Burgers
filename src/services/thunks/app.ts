@@ -7,6 +7,6 @@ export const initializeApp = createAsyncThunk(
   async (_, { dispatch }) => {
     const getIngredientsPromise = dispatch(getIngredients());
     const checkAuthPromise = dispatch(checkUserAuth());
-    return await Promise.all([getIngredientsPromise, checkAuthPromise]);
+    await Promise.all([getIngredientsPromise, checkAuthPromise]);
   }
 );
