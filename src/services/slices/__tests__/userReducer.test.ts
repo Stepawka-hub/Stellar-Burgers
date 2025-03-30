@@ -4,7 +4,8 @@ import {
   reducer,
   setLoginUserError,
   setRegisterUserError,
-  setUpdateUserError
+  setUpdateUserError,
+  setAuthChecked
 } from '../userSlice';
 import {
   getFulfilledRequestId,
@@ -23,7 +24,6 @@ import {
   USER_REGISTER,
   USER_UPDATE
 } from '@thunks/user';
-import { TUserResponse } from '@api';
 
 import mockUser from './__mocks__/user.json';
 import { TUser } from '@utils-types';
@@ -59,6 +59,13 @@ describe('Работа редьюсера user', () => {
       const { updateUserError } = newState;
 
       expect(updateUserError).toBe(errorText);
+    });
+
+    it('Изменение флага isAuthChecked', () => {
+      const newState = reducer(initialState, setAuthChecked());
+      const { isAuthChecked } = newState;
+
+      expect(isAuthChecked).toBe(true);
     });
   });
 

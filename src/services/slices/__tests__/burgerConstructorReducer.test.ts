@@ -3,7 +3,9 @@ import {
   addIngredient,
   moveIngredient,
   reducer,
-  removeIngredient
+  removeIngredient,
+  setModalOrderData,
+  setOrderRequest
 } from '../burgerConstructorSlice';
 import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
 import { TBurgerConstructorState } from '../types/types';
@@ -92,6 +94,21 @@ describe('Работа редьюсера конструктора', () => {
       expected.splice(toIndex, 0, expected.splice(fromIndex, 1)[0]);
 
       expect(ingredients).toEqual(expected);
+    });
+
+    it('Изменение содержимого модального окна при заказе', () => {
+      const order: TOrder = mockOrders[0];
+      const newState = reducer(initialState, setModalOrderData(order));
+      const { orderModalData } = newState;
+
+      expect(orderModalData).toEqual(order);
+    });
+
+    it('Изменение состояния оформления заказа', () => {
+      const newState = reducer(initialState, setOrderRequest(true));
+      const { orderRequest } = newState;
+
+      expect(orderRequest).toBe(true);
     });
   });
 

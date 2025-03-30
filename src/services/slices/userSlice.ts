@@ -73,7 +73,7 @@ const userSlice = createSlice({
       })
       .addCase(getUser.rejected, (state, { error }) => {
         state.isAuthChecked = true;
-        console.error(error);
+        // console.error(error);
       })
       .addCase(
         getUser.fulfilled,
