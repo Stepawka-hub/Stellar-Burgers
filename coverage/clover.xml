@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1743334808553" clover="3.2.0">
-  <project timestamp="1743334808553" name="All files">
+<coverage generated="1743341388142" clover="3.2.0">
+  <project timestamp="1743341388142" name="All files">
     <metrics statements="460" coveredstatements="460" conditionals="53" coveredconditionals="51" methods="42" coveredmethods="18" elements="555" coveredelements="529" complexity="0" loc="460" ncloc="460" packages="1" files="6" classes="6"/>
     <file name="appSlice.ts" path="B:\Develop\GitHub\Web\Yandex\Stellar-Burgers\src\services\slices\appSlice.ts">
       <metrics statements="31" coveredstatements="31" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="1"/>

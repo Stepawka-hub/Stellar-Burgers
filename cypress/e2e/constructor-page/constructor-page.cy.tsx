@@ -8,6 +8,9 @@ import orderBurger from '../../fixtures/order-burger.json';
 const ingredients: TIngredient[] = ingredientsData.data;
 
 beforeEach(() => {
+  // Подставляем моковый токен
+  cy.setCookie('accessToken', mockAccessToken);
+
   // Перехватываем запросы
   cy.intercept('GET', '/api/auth/user', {
     fixture: 'user.json'
@@ -20,6 +23,11 @@ beforeEach(() => {
   cy.visit(host);
 
   cy.wait('@ingredients');
+});
+
+afterEach(() => {
+  // Очищаем куки
+  cy.clearCookie('accessToken');
 });
 
 describe('Проверка модальных окон (Ингредиенты)', () => {
@@ -117,16 +125,9 @@ describe('Работа конструктора', () => {
 
 describe('Создание заказа', () => {
   beforeEach(() => {
-    // Подставляем моковый токен
-    cy.setCookie('accessToken', mockAccessToken);
-
     cy.intercept('POST', '/api/orders', {
       fixture: 'order-burger.json'
     }).as('order-burger');
-  });
-
-  afterEach(() => {
-    cy.clearCookie('accessToken');
   });
 
   it('Создание заказа', () => {
