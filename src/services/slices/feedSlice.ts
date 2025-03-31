@@ -1,21 +1,16 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getFeedsApi, getOrderByNumberApi, TOrderResponse } from '@api';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder, TOrdersData } from '@utils-types';
+import { getFeeds, getOrderByNumber } from '@thunks/feed';
+import { TFeedsState } from './types/types';
 
-type TInitialState = {
-  feed: TOrdersData;
-  previewOrder: TOrder | null;
-  isFetchingFeeds: boolean;
-};
-
-const initialState: TInitialState = {
+export const initialState: TFeedsState = {
   feed: {
     orders: [],
     total: 0,
     totalToday: 0
   },
   previewOrder: null,
-  isFetchingFeeds: true
+  isFetchingFeeds: false
 };
 
 const feedSlice = createSlice({
@@ -49,22 +44,12 @@ const feedSlice = createSlice({
       })
       .addCase(
         getOrderByNumber.fulfilled,
-        (state, { payload }: PayloadAction<TOrderResponse>) => {
-          state.previewOrder = payload.orders[0];
+        (state, { payload }: PayloadAction<TOrder>) => {
+          state.previewOrder = payload;
         }
       );
   }
 });
-
-export const getOrderByNumber = createAsyncThunk(
-  'feed/getOrderByNumber',
-  async (number: number) => await getOrderByNumberApi(number)
-);
-
-export const getFeeds = createAsyncThunk(
-  'feed/getFeedsInfo',
-  async () => await getFeedsApi()
-);
 
 export const reducer = feedSlice.reducer;
 export const { setPreviewOrder } = feedSlice.actions;

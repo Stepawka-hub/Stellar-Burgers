@@ -1,0 +1,29 @@
+{
+  "user": {
+    "email": "test@mail.ru",
+    "name": "Test Name"
+  },
+  "registerData": {
+    "email": "register-test@mail.ru",
+    "name": "test",
+    "password": "test-password"
+  },
+  "registerResponse": {
+    "email": "register-test@mail.ru",
+    "name": "test"
+  },
+  "loginData": {
+    "email": "login-test@mail.ru",
+    "name": "test",
+    "password": "test-password"
+  },
+  "loginResponse": {
+    "email": "register-test@mail.ru",
+    "name": "test",
+    "password": "test-password"
+  },
+  "updateResponse": {
+    "email": "updated-email@mail.ru",
+    "name": "Updated Name"
+  }
+}

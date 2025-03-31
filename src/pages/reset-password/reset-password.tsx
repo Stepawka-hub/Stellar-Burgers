@@ -3,18 +3,19 @@ import { useNavigate } from 'react-router-dom';
 
 import { resetPasswordApi } from '@api';
 import { ResetPasswordUI } from '@ui-pages';
+import { TError } from '@utils-types';
 
 export const ResetPassword: FC = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<TError>(null);
   const [isFetching, setIsFetching] = useState(false);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
 
-    if (!password || !token) return setError(new Error('Заполните все поля!'));
+    if (!password || !token) return setError('Заполните все поля!');
 
     setError(null);
     setIsFetching(true);
@@ -35,7 +36,7 @@ export const ResetPassword: FC = () => {
 
   return (
     <ResetPasswordUI
-      errorText={error?.message}
+      errorText={error}
       password={password}
       token={token}
       isFetching={isFetching}

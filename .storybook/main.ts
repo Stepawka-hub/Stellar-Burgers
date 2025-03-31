@@ -20,6 +20,7 @@ const config: StorybookConfig = {
           '@utils-types': path.resolve(__dirname, '../src/utils/types'),
           '@api': path.resolve(__dirname, '../src/utils/burger-api.ts'),
           '@slices': path.resolve(__dirname, '../src/services/slices'),
+          '@thunks': path.resolve(__dirname, '../src/services/thunks'),
           '@selectors': path.resolve(__dirname, '../src/services/selectors')
         })
       : null;

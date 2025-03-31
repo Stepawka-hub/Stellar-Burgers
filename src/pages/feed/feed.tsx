@@ -2,12 +2,9 @@ import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
 import { FC, useEffect } from 'react';
-import {
-  getFeeds,
-  getIsFetchingFeeds,
-  getOrdersSelector
-} from '../../services/slices/feedSlice';
+import { getIsFetchingFeeds, getOrdersSelector } from '@slices/feedSlice';
 import { useDispatch, useSelector } from '../../services/store';
+import { getFeeds } from '@thunks/feed';
 
 export const Feed: FC = () => {
   /** TODO: взять переменную из стора */

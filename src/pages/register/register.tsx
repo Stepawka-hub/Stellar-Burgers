@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from '../../services/store';
 import {
   getRegisterUserError,
   getRegisterUserRequest,
-  registerUser,
   setRegisterUserError
-} from '../../services/slices/userSlice';
+} from '@slices/userSlice';
+import { registerUser } from '@thunks/user';
 
 export const Register: FC = () => {
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ export const Register: FC = () => {
 
   useEffect(
     () => () => {
-      dispatch(setRegisterUserError(''));
+      dispatch(setRegisterUserError(null));
     },
     []
   );

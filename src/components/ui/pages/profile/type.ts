@@ -1,3 +1,4 @@
+import { TError } from '@utils-types';
 import { ChangeEvent, SyntheticEvent } from 'react';
 
 export type ProfileUIProps = {
@@ -10,6 +11,6 @@ export type ProfileUIProps = {
   handleSubmit: (e: SyntheticEvent) => void;
   handleCancel: (e: SyntheticEvent) => void;
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  updateUserError?: string;
+  updateUserError?: TError;
   updateUserRequest?: boolean;
 };

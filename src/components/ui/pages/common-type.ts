@@ -1,7 +1,8 @@
+import { TError } from '@utils-types';
 import { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 
 export type PageUIProps = {
-  errorText: string | undefined;
+  errorText: TError;
   email: string;
   isFetching?: boolean;
   setEmail: Dispatch<SetStateAction<string>>;

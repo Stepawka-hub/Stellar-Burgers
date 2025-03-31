@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "name": "Краторный био-марсианский бургер",
+  "order": {
+    "ingredients": ["643d69a5c3f7b9001cfa093c", "643d69a5c3f7b9001cfa0941"],
+    "_id": "67e063956fce7d001db5bd6c",
+    "owner": {
+      "name": "Fake name",
+      "email": "mock-address@mail.ru",
+      "createdAt": "2025-03-08T16:26:31.265Z",
+      "updatedAt": "2025-03-08T16:26:31.265Z"
+    },
+    "status": "done",
+    "name": "Краторный био-марсианский бургер",
+    "createdAt": "2025-03-23T19:40:05.812Z",
+    "updatedAt": "2025-03-23T19:40:06.493Z",
+    "number": 71974,
+    "price": 1679
+  }
+}

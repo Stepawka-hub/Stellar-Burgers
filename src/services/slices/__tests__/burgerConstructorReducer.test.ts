@@ -1,0 +1,173 @@
+import { nanoid } from '@reduxjs/toolkit';
+import {
+  addIngredient,
+  moveIngredient,
+  reducer,
+  removeIngredient,
+  setModalOrderData,
+  setOrderRequest
+} from '../burgerConstructorSlice';
+import { TConstructorIngredient, TIngredient, TOrder } from '@utils-types';
+import { TBurgerConstructorState } from '../types/types';
+import {
+  ORDER_BURGER,
+  orderBurger
+} from 'src/services/thunks/burgerConstructor';
+
+import mockIngredientsData from './__mocks__/ingredients.json';
+import mockBunsData from './__mocks__/buns.json';
+import mockOrdersData from './__mocks__/orders.json';
+import {
+  getFulfilledRequestId,
+  getPendingRequestId,
+  getRejectedRequestId
+} from './helpers/helpers';
+
+const mockIngredients: TIngredient[] = mockIngredientsData.data;
+const mockBuns: TIngredient[] = mockBunsData.data;
+const mockOrders: TOrder[] = mockOrdersData.data;
+
+describe('Работа редьюсера конструктора', () => {
+  describe('Тесты синхронных экшенов', () => {
+    const constructorIngredients: TConstructorIngredient[] = [
+      {
+        id: nanoid(),
+        ...mockIngredients[0]
+      },
+      {
+        id: nanoid(),
+        ...mockIngredients[1]
+      }
+    ];
+
+    const initialState: TBurgerConstructorState = {
+      constructorItems: {
+        bun: {
+          id: null,
+          price: 0
+        },
+        ingredients: [...constructorIngredients]
+      },
+      orderError: null,
+      orderRequest: false,
+      orderModalData: null
+    };
+
+    it('Добавление ингредиента в конструктор', () => {
+      const newState = reducer(initialState, addIngredient(mockIngredients[0]));
+
+      const { ingredients } = newState.constructorItems;
+
+      expect(ingredients).toHaveLength(3);
+    });
+
+    it('Добавление булочки в конструктор', () => {
+      const newState = reducer(initialState, addIngredient(mockBuns[0]));
+
+      const { bun } = newState.constructorItems;
+
+      expect(bun._id).toBe(mockBuns[0]._id);
+    });
+
+    it('Удаление ингредиента из конструктора', () => {
+      const newState = reducer(
+        initialState,
+        removeIngredient(constructorIngredients[0].id)
+      );
+
+      const { ingredients } = newState.constructorItems;
+
+      expect(ingredients).toHaveLength(1);
+    });
+
+    it('Перемещение ингредиента в конструкторе', () => {
+      const fromIndex = 0;
+      const toIndex = 1;
+
+      const newState = reducer(
+        initialState,
+        moveIngredient({ fromIndex, toIndex })
+      );
+
+      const { ingredients } = newState.constructorItems;
+      const expected = [...initialState.constructorItems.ingredients];
+      expected.splice(toIndex, 0, expected.splice(fromIndex, 1)[0]);
+
+      expect(ingredients).toEqual(expected);
+    });
+
+    it('Изменение содержимого модального окна при заказе', () => {
+      const order: TOrder = mockOrders[0];
+      const newState = reducer(initialState, setModalOrderData(order));
+      const { orderModalData } = newState;
+
+      expect(orderModalData).toEqual(order);
+    });
+
+    it('Изменение состояния оформления заказа', () => {
+      const newState = reducer(initialState, setOrderRequest(true));
+      const { orderRequest } = newState;
+
+      expect(orderRequest).toBe(true);
+    });
+  });
+
+  describe('Тесты экшенов, генерируемых при выполнении асинхронных запросов', () => {
+    const initialState: TBurgerConstructorState = {
+      constructorItems: {
+        bun: {
+          id: null,
+          price: 0
+        },
+        ingredients: []
+      },
+      orderError: null,
+      orderRequest: false,
+      orderModalData: null
+    };
+
+    describe('Заказ бургера', () => {
+      it('Начало запроса', () => {
+        const requestId = getPendingRequestId(ORDER_BURGER);
+        const newState = reducer(
+          initialState,
+          orderBurger.pending(requestId, [])
+        );
+
+        const { orderRequest, orderError } = newState;
+
+        expect(orderRequest).toBe(true);
+        expect(orderError).toBe(null);
+      });
+
+      it('Успешное выполнение запроса', () => {
+        const requestId = getFulfilledRequestId(ORDER_BURGER);
+        const mockOrder: TOrder = mockOrders[0];
+        const newState = reducer(
+          initialState,
+          orderBurger.fulfilled(mockOrder, requestId, [])
+        );
+
+        const { orderModalData, orderRequest, orderError } = newState;
+
+        expect(orderModalData).toEqual(mockOrder);
+        expect(orderRequest).toBe(false);
+        expect(orderError).toBe(null);
+      });
+
+      it('Возникновение ошибки', () => {
+        const requestId = getRejectedRequestId(ORDER_BURGER);
+        const mockError = new Error('Error when creating an order');
+        const newState = reducer(
+          initialState,
+          orderBurger.rejected(mockError, requestId, [])
+        );
+
+        const { orderRequest, orderError } = newState;
+
+        expect(orderRequest).toBe(false);
+        expect(orderError).toBe(mockError.message);
+      });
+    });
+  });
+});

@@ -2,7 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import {
   getIngredientsSelector,
   getPreviewIngredientId
-} from '../slices/ingredientsSlice';
+} from '@slices/ingredientsSlice';
 
 export const getBunsSelector = createSelector(
   getIngredientsSelector,

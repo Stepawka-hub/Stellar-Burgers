@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { forgotPasswordApi } from '@api';
 import { ForgotPasswordUI } from '@ui-pages';
+import { TError } from '@utils-types';
 
 export const ForgotPassword: FC = () => {
   const [email, setEmail] = useState('');
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<TError>(null);
   const [isFetching, setIsFetching] = useState(false);
 
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const ForgotPassword: FC = () => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
 
-    if (!email) return setError(new Error('Укажите email!'));
+    if (!email) return setError('Укажите email!');
 
     setError(null);
     setIsFetching(true);
@@ -29,7 +30,7 @@ export const ForgotPassword: FC = () => {
 
   return (
     <ForgotPasswordUI
-      errorText={error?.message}
+      errorText={error}
       email={email}
       isFetching={isFetching}
       setEmail={setEmail}

@@ -22,9 +22,12 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   const isBunSelected = constructorItems.bun.id !== null;
 
   return (
-    <section className={styles.burger_constructor}>
+    <section
+      className={styles.burger_constructor}
+      data-cyid='burger-constructor'
+    >
       {isBunSelected ? (
-        <div className={`${styles.element} mb-4 mr-4`}>
+        <div className={`${styles.element} mb-4 mr-4`} data-cyid='bun-top'>
           <ConstructorElement
             type='top'
             isLocked
@@ -36,11 +39,12 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       ) : (
         <div
           className={`${styles.noBuns} ${styles.noBunsTop} ml-8 mb-4 mr-5 text text_type_main-default`}
+          data-cyid='no-bun-top'
         >
           Выберите булки
         </div>
       )}
-      <ul className={styles.elements}>
+      <ul className={styles.elements} data-cyid='filling'>
         {constructorItems.ingredients.length > 0 ? (
           constructorItems.ingredients.map(
             (item: TConstructorIngredient, index: number) => (
@@ -55,13 +59,14 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         ) : (
           <div
             className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
+            data-cyid='no-filling'
           >
             Выберите начинку
           </div>
         )}
       </ul>
       {isBunSelected ? (
-        <div className={`${styles.element} mt-4 mr-4`}>
+        <div className={`${styles.element} mt-4 mr-4`} data-cyid='bun-bottom'>
           <ConstructorElement
             type='bottom'
             isLocked
@@ -73,6 +78,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       ) : (
         <div
           className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
+          data-cyid='no-bun-bottom'
         >
           Выберите булки
         </div>

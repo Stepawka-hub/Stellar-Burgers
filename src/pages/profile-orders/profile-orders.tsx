@@ -4,9 +4,9 @@ import { FC, useEffect } from 'react';
 import { useSelector, useDispatch } from '../../services/store';
 import {
   getIsFetchingOrders,
-  getUserOrders,
   getUserOrdersSelector
-} from '../../services/slices/profileSlice';
+} from '@slices/profileSlice';
+import { getUserOrders } from '@thunks/profile';
 
 export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();
